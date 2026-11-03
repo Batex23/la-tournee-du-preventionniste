@@ -5862,7 +5862,7 @@ const ARG_B = [
   { id:'arg_chateau', x:2, y:2, w:7, h:4, draw:'chateau', label:'CHÂTEAU DU PLESSIS', find:'chateau' },
   { id:'arg_eglise', x:15, y:4, w:4, h:6, draw:'eglise', label:'ÉGLISE NOTRE-DAME', find:'eglise' },
   { id:'arg_gendarmerie', x:23, y:3, w:5, h:3, draw:'gendarmerie', label:'GENDARMERIE', find:'gendarmerie' },
-  { id:'arg_caserne', x:22, y:11, w:6, h:3, draw:'caserne', label:'CENTRE DE SECOURS', door:[26, 13], find:'caserne' },
+  { id:'arg_caserne', x:22, y:11, w:6, h:3, draw:'caserne', label:'CIS ARGENTRÉ-ÉTRELLES', door:[26, 13], find:'caserne' },
   { id:'arg_pasquet', x:2, y:12, w:7, h:4, draw:'pasquet', label:'PASQUET MENUISERIES', find:'pasquet' },
 ];
 
@@ -5875,7 +5875,7 @@ const ARG_FINDS = {
   pinel:['Le bois du Pinel', ["Le bois du Pinel.", "Des fouilles y ont mis au jour des fortifications médiévales. Le centre du monde ne date pas d'hier."]],
   gendarmerie:['La gendarmerie', ["La brigade de gendarmerie.", "Ici, sur les accidents et les feux, gendarmes et pompiers se croisent souvent. Et ils se connaissent tous par leur prénom."]],
   pasquet:['L\'entreprise Pasquet', ["Pasquet Menuiseries : fenêtres, portes et volets, en bois, bois-alu, alu et PVC.", "Une entreprise familiale d'Argentré-du-Plessis, née de la reprise d'un atelier artisanal en 1925.", "Un atelier de menuiserie, côté prévention : poussières de bois, stockages, machines. Une belle visite à faire, casque sous le bras."]],
-  caserne:['La caserne', ["Le centre de secours d'Argentré-du-Plessis.", "Les portes des remises sont fermées, les tenues prêtes. C'est ici que tout a commencé."]],
+  caserne:['La caserne', ["Le CIS Argentré-Étrelles, le centre d'incendie et de secours.", "Les portes des remises sont fermées, les tenues prêtes. C'est ici que tout a commencé."]],
   tableau:['Le tableau des chefs de centre', null],
 };
 const ARG_N = Object.keys(ARG_FINDS).length;
@@ -5966,7 +5966,7 @@ async function argInteract(sc, x, y){
   if (await argPine(sc, x, y)) return true;
   if (sc.mapId === 'argentre') {
     const b = ARG_B.find(b => x >= b.x && x < b.x + b.w && y >= b.y && y < b.y + b.h);
-    if (b) { if (b.find === 'caserne') { await say("Le centre de secours. La porte du personnel est ouverte : entre."); return true; }
+    if (b) { if (b.find === 'caserne') { await say("Le CIS Argentré-Étrelles. La porte du personnel est ouverte : entre."); return true; }
       await say(ARG_FINDS[b.find][1], ARG_FINDS[b.find][0]); argFind(b.find); return true; }
     const c = sc.M.t[y]?.[x];
     if (c === 'w') { await say(ARG_FINDS.etang[1], ARG_FINDS.etang[0]); argFind('etang'); return true; }
@@ -5985,10 +5985,10 @@ async function argDoor(id){
 }
 function argTableau(){
   return new Promise(res => {
-    const P = panel(`<button type="button" class="btn alt close" id="atX">Fermer</button><div class="eyebrow">Centre de secours d'Argentré-du-Plessis</div>
+    const P = panel(`<button type="button" class="btn alt close" id="atX">Fermer</button><div class="eyebrow">CIS Argentré-Étrelles</div>
       <div class="argboard"><div class="abT">Chefs de centre</div><div class="abN">Marcel GILBERT</div><div class="abN">Eric GILBERT</div></div>
-      <p class="lede">Deux chefs de centre, deux Gilbert : ce sont les oncles du créateur de ce jeu.</p>
-      <p>C'est en les regardant partir sur intervention, ici, à Argentré, qu'il a eu envie de devenir sapeur-pompier. Puis de transmettre la prévention. Puis de créer cette tournée.</p>
+      <p class="lede">Deux chefs de centre, un père et son fils : Marcel, le grand-père du créateur de ce jeu, et Eric, son oncle.</p>
+      <p>C'est en les regardant partir en intervention, ici, à Argentré, qu'il a eu envie de devenir sapeur-pompier. Puis de transmettre la prévention. Puis de créer cette tournée.</p>
       <p class="ref">Merci à eux. Et merci à tous les chefs de centre qui donnent, sans le savoir, des vocations.</p>`);
     $('#atX').onclick = () => { closePanel(); res(); };
     argFind('tableau');
@@ -6125,7 +6125,7 @@ ETAPES.forEach((e, i) => { e.n = i + 1; if (!e.badge) e.badge = 'e' + e.n; if (!
 const ETAPE = Object.fromEntries(ETAPES.map(e => [e.id, e]));
 const ROUTES = ETAPES.slice(0, -1).map((e, i) => ({ id:'r' + (i+1), n:i+1, kind:ROUTES_DEF[i][0], name:ROUTES_DEF[i][1], desc:ROUTES_DEF[i][2], from:e.id, to:ETAPES[i+1].id, themes:ROUTE_THEMES[i] }));
 const ROUTE = Object.fromEntries(ROUTES.map(r => [r.id, r]));
-const placeName = id => id === 'argentre' ? 'Argentré-du-Plessis' : id === 'argcaserne' ? 'Caserne d\'Argentré' : id === 'amphi' ? 'Amphithéâtre · ENSOSP' : id === 'em33' ? 'État-major SDIS 33' : id === 'garrigue' ? 'La Garrigue' : id === 'oudine' ? 'Oudiné' : ETAPE[id]?.name || ROUTE[id]?.name || SITES[id]?.name || id;
+const placeName = id => id === 'argentre' ? 'Argentré-du-Plessis' : id === 'argcaserne' ? 'CIS Argentré-Étrelles' : id === 'amphi' ? 'Amphithéâtre · ENSOSP' : id === 'em33' ? 'État-major SDIS 33' : id === 'garrigue' ? 'La Garrigue' : id === 'oudine' ? 'Oudiné' : ETAPE[id]?.name || ROUTE[id]?.name || SITES[id]?.name || id;
 const etapeOpen = e => e.n === 1 || S.badges.includes(ETAPES[e.n-2].badge);
 const badgeCount = () => ETAPES.filter(e => S.badges.includes(e.badge)).length;
 
