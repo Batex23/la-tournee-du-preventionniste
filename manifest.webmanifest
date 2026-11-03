@@ -1,0 +1,17 @@
+{
+  "name": "La Tournée du Préventionniste",
+  "short_name": "Tournée Prév.",
+  "description": "Le jeu de la prévention incendie : commissions de sécurité, feux, RCCI et réglementation ERP.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#14203a",
+  "theme_color": "#14203a",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
