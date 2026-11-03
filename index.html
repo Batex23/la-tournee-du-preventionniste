@@ -338,6 +338,7 @@ code{font-family:var(--f-disp);background:#e8edf3;color:var(--ink);padding:0 4px
 .teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.team{border:3px solid var(--tc);border-radius:8px;padding:8px 10px;background:#fff;display:flex;flex-direction:column}.team span{font-size:13px;color:var(--steel)}.tdot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}.gbar{height:18px;background:#e3e7ec;border:2px solid var(--ink);border-radius:9px;overflow:hidden}.gbar i{display:block;height:100%;background:linear-gradient(90deg,#f5c518,#c8102e)}#teach select,#teach input,#panel select{background:#fff;color:#14203a;border:2px solid #14203a;border-radius:6px;padding:4px 6px;font:inherit;color-scheme:light}
 .mdls{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.mdl{display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;border:3px solid var(--mc);border-radius:10px;padding:10px 8px;background:#fff;color:var(--ink)}.mdl .disc{width:38px;height:38px;border-radius:50%;background:var(--mc);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;border:2px solid #14203a}.mdl b{font-size:13.5px}.mdl span{font-size:12px;color:var(--steel)}.mdl .disc{font-size:22px;color:#fff}.mdl em{font-size:11px;font-style:normal;color:var(--mc);font-weight:700}.mdl.off{opacity:.55;border-style:dashed}.mdl.off .disc{background:#d5dae1;color:#5d6c84}.bracket{display:flex;gap:16px;overflow-x:auto;padding:8px 0}.bcol{display:flex;flex-direction:column;justify-content:space-around;gap:12px;min-width:200px}.bhead{font-family:var(--f-disp);text-align:center}.bmatch{border:2px solid var(--ink);border-radius:8px;background:#fff;overflow:hidden}.bmatch div{display:flex;justify-content:space-between;gap:8px;padding:6px 10px;font-size:clamp(14px,1.4vw,20px)}.bmatch div+div{border-top:1px solid #d5dae1}.bmatch .win{background:var(--green2);font-weight:700}
 #panel{z-index:42}
+.argboard{background:#5a3a22;border:6px solid #3a2414;border-radius:6px;padding:16px;margin:12px 0;text-align:center;box-shadow:inset 0 0 0 2px #7a5230}.abT{font-family:var(--f-disp);color:#fff;background:#c8102e;border-radius:4px;padding:4px 10px;display:inline-block;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase}.abN{font-family:var(--f-disp);font-size:22px;color:#14203a;background:linear-gradient(#f0d77a,#c9a640);border:2px solid #3a2414;border-radius:4px;padding:6px 10px;margin:8px auto;max-width:320px}
 .coin{display:inline-block;background:#f5c518;color:#14203a;font-weight:700;border-radius:999px;padding:0 8px}.chain{list-style:none;padding:0;margin:10px 0;display:grid;gap:8px}.chain li{display:flex;gap:10px;align-items:center;border:2px solid var(--ink);border-radius:10px;padding:8px 10px;background:#fff;color:var(--ink);position:relative}.chain li em{margin-left:auto;font-style:normal;font-size:12px;font-weight:700;color:#c8102e;white-space:nowrap}.cic{font-size:24px}
 .mhead{font-family:var(--f-disp);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--steel);margin:16px 0 6px}.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.mtile{display:flex;align-items:center;gap:10px;text-align:left;font:inherit;background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:10px;padding:10px 12px;cursor:pointer;min-height:56px;box-shadow:0 3px 0 var(--ink)}.mtile:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}.mtile.hot{background:#fff4d0;border-color:#c8102e;box-shadow:0 3px 0 #c8102e}.mic{font-size:24px;line-height:1;flex:none}.mtx{display:flex;flex-direction:column;line-height:1.2}.mtx b{font-size:15px}.mtx small{font-size:12px;color:var(--steel)}.mfoot{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;justify-content:center}
 .menugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:14px}.setrow{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #d5dae1;cursor:pointer}.setrow input{width:22px;height:22px;flex:none;margin-top:2px;accent-color:#c8102e;color-scheme:light}.hebdocard{border-left:4px solid #c8102e}.hebdocard .btn{margin-top:6px}body.bigtext #dbox,body.bigtext .dtext,body.bigtext #dialog{font-size:1.18em}body.bigtext .qtext{font-size:1.25em!important}body.bigtext .opt{font-size:1.12em}body.bigtext .lede,body.bigtext .note{font-size:1.1em}
@@ -415,7 +416,7 @@ code{font-family:var(--f-disp);background:#e8edf3;color:var(--ink);padding:0 4px
       <div><b id="mQ">0</b>questions</div>
       <div><b id="mT">0</b>thèmes</div>
       <div><b id="mP">–</b>joueurs classés</div>
-      <div><b>v0.24</b>version test</div>
+      <div><b>v0.25</b>version test</div>
     </div>
   </div>
 </div>
@@ -5030,7 +5031,7 @@ async function megafeuTalk(){
 MEDALS.push(['megafeu', 'Mégafeu de Gironde', 'Traiter les reprises du mégafeu de juillet 2026, route des Vignobles', 'o', s => s.megafeu?.st === 'done']);
 
 /* ================= v19 : RETOURS DES TESTEURS · EFFETS ET SENSATIONS ================= */
-const GAME_VER = 'v0.24';
+const GAME_VER = 'v0.25';
 const reduceMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
 const buzz = p => { try { if (S?.vibe !== false && navigator.vibrate) navigator.vibrate(p); } catch(e){} };
 
@@ -5786,6 +5787,222 @@ function ssiapNpcs(sc){
   if (t) sc.npcs.push({ id:a[0], x:t[0], y:t[1], f:'down' });
 }
 
+/* ================= v25 : EASTER EGG · ARGENTRÉ-DU-PLESSIS (passage secret, route 7) =================
+   Un pin un peu différent, en forêt de Brocéliande, ouvre un passage vers Argentré-du-Plessis (Ille-et-Vilaine).
+   Niveau de découverte pure : pas de combat, pas de commission. Chaque lieu découvert rapporte des points. */
+
+/* ---- Tuiles ---- */
+TILE_DRAW.oddpine = function(c){ TILE_DRAW.tree(c);
+  c.fillStyle = '#2c6a4a'; c.beginPath(); c.arc(9.5, 8, 3.2, 0, 7); c.fill();   // feuillage un peu plus bleuté
+  c.fillStyle = '#4a3420'; c.fillRect(7, 12, 2, 3);                              // creux dans l'écorce
+  c.fillStyle = '#e8f0c8'; c.fillRect(10, 5, 1, 1);                              // un seul reflet
+};
+TILE_DRAW.argchefsL = function(c){ TILE_DRAW.wall(c); c.fillStyle = '#4a2f1a'; c.fillRect(1, 1, 15, 13); c.fillStyle = '#7a5230'; c.fillRect(2, 2, 14, 11);
+  c.fillStyle = '#c8102e'; c.fillRect(2, 2, 14, 2); c.fillStyle = '#d9b44a'; c.fillRect(4, 6, 11, 2); c.fillRect(4, 10, 11, 2); };
+TILE_DRAW.argchefsR = function(c){ TILE_DRAW.wall(c); c.fillStyle = '#4a2f1a'; c.fillRect(0, 1, 15, 13); c.fillStyle = '#7a5230'; c.fillRect(0, 2, 14, 11);
+  c.fillStyle = '#c8102e'; c.fillRect(0, 2, 14, 2); c.fillStyle = '#d9b44a'; c.fillRect(1, 6, 10, 2); c.fillRect(1, 10, 10, 2); };
+TILE_DRAW.argengF = function(c){ TILE_DRAW.floor(c); c.fillStyle = '#161a24'; c.fillRect(1, 1, 14, 15); c.fillStyle = '#c8102e'; c.fillRect(2, 2, 12, 14);
+  c.fillStyle = '#9fd0ea'; c.fillRect(3, 3, 10, 4); c.fillStyle = '#3f86c4'; c.fillRect(3, 1, 3, 2); c.fillRect(10, 1, 3, 2); c.fillStyle = '#f3efe8'; c.fillRect(2, 10, 12, 1); };
+TILE_DRAW.argengR = function(c){ TILE_DRAW.floor(c); c.fillStyle = '#161a24'; c.fillRect(1, 0, 14, 15); c.fillStyle = '#c8102e'; c.fillRect(2, 0, 12, 14);
+  c.fillStyle = '#d4d7dd'; c.fillRect(4, 2, 8, 9); c.fillStyle = '#9aa0aa'; for (let y = 3; y < 11; y += 2) c.fillRect(4, y, 8, 1); c.fillStyle = '#f5c518'; c.fillRect(2, 12, 12, 1); };
+TILE_DRAW.arglocker = function(c){ TILE_DRAW.floor(c); c.fillStyle = '#161a24'; c.fillRect(1, 0, 14, 15); c.fillStyle = '#5d6c84'; c.fillRect(2, 1, 5, 13); c.fillRect(9, 1, 5, 13);
+  c.fillStyle = '#f5c518'; c.fillRect(3, 2, 3, 2); c.fillRect(10, 2, 3, 2); c.fillStyle = '#d4d7dd'; c.fillRect(6, 7, 1, 2); c.fillRect(13, 7, 1, 2); };
+Object.assign(CHAR_TILE, { 'ŧ':'oddpine' }); TOWN_BLOCK.add('ŧ');
+
+/* ---- Bâtiments dessinés à la main ---- */
+const ARG_LM = {
+  chateau(c, W, H){ // tour ronde (vestige), deux pavillons, logis néo-Renaissance, chapelle
+    R_(c, '#161a24', 4, 22, W - 8, H - 22); R_(c, '#d9cdb0', 5, 23, W - 10, H - 24);
+    POLY(c, '#3d4656', [[14, 24], [24, 12], [W - 24, 12], [W - 14, 24]]); R_(c, '#2a303c', 14, 23, W - 28, 1);
+    for (const dx of [34, 46, 58]) { R_(c, '#3d4656', dx, 13, 6, 8); R_(c, '#e9e4dc', dx + 1, 15, 4, 5); }
+    for (const px of [14, W - 30]) { R_(c, '#c9bc9c', px, 14, 16, H - 14); R_(c, '#161a24', px, 14, 16, 1); POLY(c, '#3d4656', [[px - 1, 15], [px + 8, 2], [px + 17, 15]]); R_(c, '#d9b44a', px + 7, 1, 2, 3); }
+    R_(c, '#b9ad8f', 0, 26, 12, H - 26); R_(c, '#161a24', 0, 26, 12, 1); POLY(c, '#3d4656', [[-1, 27], [6, 10], [13, 27]]);
+    for (let x = 20; x < W - 18; x += 9) for (const y of [30, 44]) { R_(c, '#3a4a5e', x, y, 5, 8); R_(c, '#f3efe8', x + 2, y, 1, 8); }
+    R_(c, '#5a3a22', W / 2 - 4, H - 12, 8, 12); R_(c, '#8a6a40', W / 2 - 3, H - 11, 6, 11);
+    R_(c, '#d9b44a', W - 5, 18, 1, 6); R_(c, '#d9b44a', W - 7, 20, 5, 1);
+  },
+  eglise(c, W, H){ // granite, ardoise, clocher en façade, plan en croix latine
+    R_(c, '#161a24', 6, 34, W - 12, H - 34); R_(c, '#a3a39c', 7, 35, W - 14, H - 36);
+    POLY(c, '#3d4656', [[4, 36], [W / 2, 22], [W - 4, 36]]);
+    R_(c, '#8f8f88', 0, 52, 8, 18); R_(c, '#8f8f88', W - 8, 52, 8, 18); R_(c, '#3d4656', 0, 50, 8, 3); R_(c, '#3d4656', W - 8, 50, 8, 3);
+    for (const x of [12, W - 16]) for (const y of [44, 64]) { R_(c, '#2a3a5e', x, y, 4, 9); c.fillStyle = '#2a3a5e'; c.beginPath(); c.arc(x + 2, y, 2, Math.PI, 0); c.fill(); }
+    const tx = W / 2 - 11; R_(c, '#161a24', tx - 1, 18, 24, H - 18); R_(c, '#b4b3ab', tx, 19, 22, H - 20);
+    R_(c, '#9a998f', tx, 19, 22, 2); R_(c, '#9a998f', tx, 48, 22, 2); R_(c, '#9a998f', tx, 70, 22, 2);
+    R_(c, '#161a24', tx + 8, 26, 6, 10); R_(c, '#3d4656', tx + 9, 27, 4, 9);
+    c.fillStyle = '#f3efe8'; c.beginPath(); c.arc(tx + 11, 58, 4, 0, 7); c.fill(); R_(c, '#161a24', tx + 11, 55, 1, 3);
+    R_(c, '#5a3a22', tx + 6, H - 14, 10, 14); c.fillStyle = '#5a3a22'; c.beginPath(); c.arc(tx + 11, H - 14, 5, Math.PI, 0); c.fill();
+    POLY(c, '#3d4656', [[tx - 2, 19], [tx + 11, 6], [tx + 24, 19]]); R_(c, '#3d4656', tx + 8, 4, 6, 4);
+    R_(c, '#d9b44a', tx + 10, 0, 2, 6); R_(c, '#d9b44a', tx + 8, 1, 6, 1);
+  },
+  gendarmerie(c, W, H){
+    R_(c, '#161a24', 0, 12, W, H - 12); R_(c, '#ece7dc', 1, 13, W - 2, H - 14); POLY(c, '#3d4656', [[-1, 14], [8, 4], [W - 8, 4], [W + 1, 14]]);
+    R_(c, '#1d2a6d', 1, 16, W - 2, 6); R_(c, '#f3efe8', 6, 18, W - 12, 2);
+    for (let x = 6; x < W - 8; x += 12) if (Math.abs(x + 3 - W / 2) > 6) R_(c, '#7fb3d9', x, 27, 6, 8);
+    R_(c, '#1d2a6d', W / 2 - 5, H - 13, 10, 13); R_(c, '#3f86c4', W / 2 - 2, 24, 4, 3);
+    R_(c, '#161a24', W - 6, 0, 1, 14); R_(c, '#1d4fa0', W - 5, 1, 2, 5); R_(c, '#f3efe8', W - 3, 1, 2, 5); R_(c, '#c8102e', W - 1, 1, 1, 5);
+  },
+  caserne(c, W, H){
+    R_(c, '#161a24', 0, 10, W, H - 10); R_(c, '#ece7dc', 1, 11, W - 2, H - 12); R_(c, '#c8102e', 0, 6, W, 6); R_(c, '#a30d25', 0, 11, W, 1);
+    R_(c, '#f3efe8', 8, 8, W - 16, 2);
+    for (const x of [6, 30, 54]) { R_(c, '#161a24', x - 1, 20, 22, H - 20); R_(c, '#c8102e', x, 21, 20, H - 21); for (let y = 24; y < H; y += 4) R_(c, '#a30d25', x, y, 20, 1); }
+    R_(c, '#5a3a22', W - 16, H - 14, 10, 14); R_(c, '#f5c518', W - 12, H - 8, 2, 2);
+    R_(c, '#3f86c4', W - 13, 14, 4, 3);
+  },
+  pasquet(c, W, H){ // atelier de menuiserie : toit en sheds, bardage, menuiseries stockées
+    R_(c, '#161a24', 0, 18, W, H - 18); R_(c, '#b8bcc2', 1, 19, W - 2, H - 20);
+    for (let x = 0; x < W; x += 16) { POLY(c, '#5d6c84', [[x, 19], [x + 12, 6], [x + 12, 19]]); R_(c, '#9fd0ea', x + 12, 7, 3, 12); R_(c, '#161a24', x + 15, 6, 1, 13); }
+    for (let x = 4; x < W - 4; x += 3) R_(c, '#a6aab0', x, 22, 1, H - 24);
+    R_(c, '#2f6b35', 4, 24, W - 8, 6); R_(c, '#f3efe8', 8, 26, W - 16, 2);
+    R_(c, '#161a24', 8, 36, 30, H - 36); R_(c, '#5d6c84', 9, 37, 28, H - 37); for (let y = 40; y < H; y += 4) R_(c, '#4a5670', 9, y, 28, 1);
+    for (let i = 0; i < 4; i++) { const x = 46 + i * 15; R_(c, '#f3efe8', x, 38, 12, 18); R_(c, '#9fd0ea', x + 2, 40, 8, 14); R_(c, '#f3efe8', x + 5, 40, 2, 14); }
+    for (let i = 0; i < 3; i++) R_(c, i % 2 ? '#c48a4a' : '#a8743a', W - 18, H - 6 - i * 3, 14, 3);
+  },
+};
+const ARG_B = [
+  { id:'arg_chateau', x:2, y:2, w:7, h:4, draw:'chateau', label:'CHÂTEAU DU PLESSIS', find:'chateau' },
+  { id:'arg_eglise', x:15, y:4, w:4, h:6, draw:'eglise', label:'ÉGLISE NOTRE-DAME', find:'eglise' },
+  { id:'arg_gendarmerie', x:23, y:3, w:5, h:3, draw:'gendarmerie', label:'GENDARMERIE', find:'gendarmerie' },
+  { id:'arg_caserne', x:22, y:11, w:6, h:3, draw:'caserne', label:'CENTRE DE SECOURS', door:[26, 13], find:'caserne' },
+  { id:'arg_pasquet', x:2, y:12, w:7, h:4, draw:'pasquet', label:'PASQUET MENUISERIES', find:'pasquet' },
+];
+
+/* ---- Découvertes ---- */
+const ARG_FINDS = {
+  panneau:['Le panneau d\'entrée', ["ARGENTRÉ-DU-PLESSIS · Ille-et-Vilaine.", "Quelqu'un a ajouté au feutre, en dessous : « centre du monde ». Personne ne l'a jamais effacé."]],
+  eglise:['L\'église Notre-Dame', ["L'église Notre-Dame : granite et ardoise, plan en croix latine, clocher en façade.", "Elle a été reconstruite de 1775 à 1779… après un incendie en 1772. Une église rebâtie après un feu : forcément, un préventionniste s'arrête devant."]],
+  chateau:['Le château du Plessis', ["Le château du Plessis, celui qui donne son nom à la commune.", "Une tour ronde, vestige du château ancien. Des pavillons surélevés vers la fin du XVIe siècle. Un logis habillé en néo-Renaissance vers 1840, et une chapelle bénite en 1879.", "Le logis, le parc et plusieurs dépendances sont inscrits aux monuments historiques."]],
+  etang:['L\'étang du parc', ["L'étang du château : triangulaire, avec ses îles.", "Il est au cœur d'un parc paysager d'une vingtaine d'hectares. Et pour un pompier, un plan d'eau, c'est toujours un point d'eau potentiel."]],
+  pinel:['Le bois du Pinel', ["Le bois du Pinel.", "Des fouilles y ont mis au jour des fortifications médiévales. Le centre du monde ne date pas d'hier."]],
+  gendarmerie:['La gendarmerie', ["La brigade de gendarmerie.", "Ici, sur les accidents et les feux, gendarmes et pompiers se croisent souvent. Et ils se connaissent tous par leur prénom."]],
+  pasquet:['L\'entreprise Pasquet', ["Pasquet Menuiseries : fenêtres, portes et volets, en bois, bois-alu, alu et PVC.", "Une entreprise familiale d'Argentré-du-Plessis, née de la reprise d'un atelier artisanal en 1925.", "Un atelier de menuiserie, côté prévention : poussières de bois, stockages, machines. Une belle visite à faire, casque sous le bras."]],
+  caserne:['La caserne', ["Le centre de secours d'Argentré-du-Plessis.", "Les portes des remises sont fermées, les tenues prêtes. C'est ici que tout a commencé."]],
+  tableau:['Le tableau des chefs de centre', null],
+};
+const ARG_N = Object.keys(ARG_FINDS).length;
+const argCount = () => Object.keys(S.argentre?.f || {}).length;
+function argFind(k){
+  S.argentre = S.argentre || {}; S.argentre.f = S.argentre.f || {}; if (S.argentre.f[k]) return false;
+  S.argentre.f[k] = Date.now(); S.credits = (S.credits || 0) + 5; save();
+  toast(`Découverte ${argCount()} / ${ARG_N}`, `${ARG_FINDS[k][0]} · +5 crédits`); gain(30, 'Argentré-du-Plessis');
+  if (argCount() >= ARG_N && !S.argentre.all){ S.argentre.all = Date.now(); save();
+    setTimeout(() => { findSecret('argentre', 150, 50); }, 900); }
+  refreshHud(); return true;
+}
+SECRETS.argentre = 'Argentré-du-Plessis, centre du monde';
+MEDALS.push(['argentre', 'Centre du monde', 'Découvrir tout Argentré-du-Plessis, derrière un pin de Brocéliande', 'o', s => Object.keys(s.argentre?.f || {}).length >= ARG_N]);
+
+/* ---- Baptiste ---- */
+PAL.baptiste_ap = { ...PAL.baptiste };
+NPCS.baptiste_ap = { name:'Baptiste', role:'Le créateur du jeu · à la maison', pal:'baptiste_ap', special: () => argBaptiste() };
+async function argBaptiste(){
+  const n = argCount();
+  if (n >= ARG_N) { await say(["Tu as tout vu. Le château, l'église, Pasquet, la caserne… et le tableau.", "Maintenant tu sais d'où vient ce jeu. Allez, retourne à ta tournée : le pin te ramène en Brocéliande."], 'Baptiste'); return; }
+  const left = Object.keys(ARG_FINDS).filter(k => !S.argentre?.f?.[k]).map(k => ARG_FINDS[k][0].replace(/^(Le |La |L')/, ''));
+  await say([`Tu as découvert ${n} ${n > 1 ? 'lieux' : 'lieu'} sur ${ARG_N}. Il te reste : ${left.join(', ')}.`, "Et n'oublie pas la caserne : entre, et regarde le mur du fond."], 'Baptiste');
+}
+
+/* ---- La carte du village ---- */
+function argentreMap(){
+  const W = 32, H = 20; const t = [];
+  for (let y = 0; y < H; y++) { t.push([]); for (let x = 0; x < W; x++) t[y].push(x === 0 || y === 0 || x === W - 1 || y === H - 1 ? 'T' : (x * 7 + y * 3) % 11 === 0 ? 'f' : '.'); }
+  const line = (x0, y0, x1, y1, ch) => { for (let y = Math.min(y0, y1); y <= Math.max(y0, y1); y++) for (let x = Math.min(x0, x1); x <= Math.max(x0, x1); x++) t[y][x] = ch; };
+  line(1, 10, 30, 10, '_'); line(16, 10, 16, 17, '_'); line(20, 2, 20, 18, '_'); line(5, 6, 5, 10, '_'); line(25, 6, 25, 10, '_'); line(20, 14, 26, 14, '_'); line(5, 16, 5, 17, '_'); line(5, 17, 16, 17, '_');
+  [[10, 2, 15], [10, 3, 14], [10, 4, 13], [10, 5, 12]].forEach(([a, y, b]) => line(a, y, b, y, 'w')); t[3][11] = 'T';
+  for (const [x, y] of [[26, 15], [27, 15], [28, 15], [29, 15], [27, 16], [28, 16], [29, 16], [28, 17], [29, 17], [24, 17], [10, 14], [11, 15], [13, 13]]) t[y][x] = 'T';
+  t[18][16] = 'ŧ'; t[16][15] = 's'; t[16][25] = 's';
+  const block = t.map(r => r.map(c => TOWN_BLOCK.has(c)));
+  const doors = {}; const bAt = {};
+  for (const b of ARG_B) {
+    if (!TEX['b_' + b.id]) mkTex('b_' + b.id, b.w * 16, b.h * 16, c => ARG_LM[b.draw](c, b.w * 16, b.h * 16));
+    for (let y = b.y; y < b.y + b.h; y++) for (let x = b.x; x < b.x + b.w; x++) { block[y][x] = true; t[y][x] = '.'; }
+    if (b.door) { block[b.door[1]][b.door[0]] = false; doors[b.door.join(',')] = 'argIn'; }
+  }
+  return { id:'argentre', W, H, t, block, doors, bAt, spots:{}, signs:{}, npcs:[['baptiste_ap', 16, 15, 'down']], exits:{}, buildings:ARG_B, argentre:true,
+    keyAt:(x, y) => 't_' + (CHAR_TILE[t[y][x]] || 'grass') };
+}
+const ARGC_ROWS = [
+  "##############",
+  "#...........L#",
+  "#............#",
+  "#.F...F......#",
+  "#.R...R...L..#",
+  "#............#",
+  "######DD######",
+];
+function argCaserneMap(){
+  const t = ARGC_ROWS.map(r => r.split('')); const H = t.length, W = t[0].length;
+  const bl = new Set('#ABFRL'); const block = t.map(r => r.map(c => bl.has(c)));
+  const base = { '#':'wall', '.':'floor', 'A':'argchefsL', 'B':'argchefsR', 'F':'argengF', 'R':'argengR', 'L':'arglocker', 'D':'mat' };
+  t[0][3] = 'A'; t[0][4] = 'B'; block[0][3] = block[0][4] = true;
+  return { id:'argcaserne', W, H, t, block, doors:{ '6,6':'argOut', '7,6':'argOut' }, spots:{}, signs:{}, npcs:[], exits:{}, keyAt:(x, y) => 't_' + (base[t[y][x]] || 'floor'), buildings:[], interior:true,
+    flavor:{ F:"Le fourgon pompe-tonne. Plein fait, prêt à décaler.", R:"L'arrière du fourgon : les tuyaux sont lovés au carré, les lances en place.", L:"Les casiers des sapeurs-pompiers. Bottes rangées, casques F1 posés dessus, prêts pour le prochain bip." } };
+}
+
+/* ---- Le pin secret (route 7) et le retour ---- */
+async function argFade(fn){
+  const d = document.createElement('div'); d.style.cssText = 'position:fixed;inset:0;background:#f3efe8;opacity:0;transition:opacity .45s;z-index:60;pointer-events:none';
+  document.body.appendChild(d); await sleep(20); d.style.opacity = '1'; await sleep(480); fn(); await sleep(120); d.style.opacity = '0'; await sleep(480); d.remove();
+}
+async function argEnter(){
+  TAP.path = null; await argFade(() => { scene.loadMap('argentre', 16, 17, 'up'); });
+  S.argentre = S.argentre || {}; if (S.argentre.met) { toast('Argentré-du-Plessis', 'Centre du monde'); return; }
+  const n = scene.npcs.find(x => x.id === 'baptiste_ap');
+  if (n) { n.x = 22; n.y = 15; n.f = 'left'; for (let i = 0; i < 24; i++) { n.x = 22 - i * .25; await sleep(45); } n.x = 16; n.f = 'down'; }
+  await say(["Allez, viens, je te présente la ville d'Argentré-du-Plessis. C'est le centre du monde et c'est peut-être l'un des meilleurs villages de France."], 'Baptiste');
+  await say(["Ici, pas de commission, pas de combat. Tu te promènes, tu découvres : chaque lieu te rapporte des points.", "Le château du Plessis, l'église Notre-Dame, la gendarmerie, l'entreprise Pasquet… et la caserne. Surtout la caserne.", "Pour rentrer en Brocéliande, le pin bizarre, au sud, te ramène."], 'Baptiste');
+  S.argentre.met = Date.now(); save(); toast('Argentré-du-Plessis', 'Un niveau secret… sans aucune utilité.');
+}
+async function argPine(sc, x, y){
+  if (sc.M.t[y]?.[x] !== 'ŧ') return false;
+  if (sc.mapId === 'argentre') { const c = await choose("Le pin bizarre. Par là, on retourne dans la forêt de Brocéliande.", ['Retourner en Brocéliande', 'Rester encore un peu'], 'Passage secret');
+    if (c === 0) await argFade(() => { scene.loadMap('r7', 16, 10, 'left'); }); return true; }
+  const seen = !!S.argentre?.met;
+  await say(seen ? ["Le pin bizarre. Tu connais le chemin…"] : ["Ce pin n'est pas tout à fait comme les autres. Son feuillage est plus bleu, et son écorce forme comme une petite porte.", "On dirait qu'il y a de la lumière, de l'autre côté…"]);
+  const c = await choose("Pousser l'écorce ?", ['Pousser', 'Laisser ce pin tranquille'], 'Passage secret');
+  if (c === 0) await argEnter(); return true;
+}
+/* ---- Interactions dans le village ---- */
+async function argInteract(sc, x, y){
+  if (await argPine(sc, x, y)) return true;
+  if (sc.mapId === 'argentre') {
+    const b = ARG_B.find(b => x >= b.x && x < b.x + b.w && y >= b.y && y < b.y + b.h);
+    if (b) { if (b.find === 'caserne') { await say("Le centre de secours. La porte du personnel est ouverte : entre."); return true; }
+      await say(ARG_FINDS[b.find][1], ARG_FINDS[b.find][0]); argFind(b.find); return true; }
+    const c = sc.M.t[y]?.[x];
+    if (c === 'w') { await say(ARG_FINDS.etang[1], ARG_FINDS.etang[0]); argFind('etang'); return true; }
+    if (c === 's' && x === 15) { await say(ARG_FINDS.panneau[1], ARG_FINDS.panneau[0]); argFind('panneau'); return true; }
+    if (c === 's' && x === 25) { await say(ARG_FINDS.pinel[1], ARG_FINDS.pinel[0]); argFind('pinel'); return true; }
+    return false;
+  }
+  if (sc.mapId === 'argcaserne' && y === 0 && (x === 3 || x === 4)) { await argTableau(); return true; }
+  return false;
+}
+async function argDoor(id){
+  if (id === 'argIn') { await argFade(() => { scene.loadMap('argcaserne', 6, 5, 'up'); }); argFind('caserne');
+    if (!S.argentre?.f?.tableau) toast('Le mur du fond', 'Un tableau en bois t\'attend.'); return true; }
+  if (id === 'argOut') { scene.loadMap('argentre', 26, 14, 'down'); return true; }
+  return false;
+}
+function argTableau(){
+  return new Promise(res => {
+    const P = panel(`<button type="button" class="btn alt close" id="atX">Fermer</button><div class="eyebrow">Centre de secours d'Argentré-du-Plessis</div>
+      <div class="argboard"><div class="abT">Chefs de centre</div><div class="abN">Marcel GILBERT</div><div class="abN">Eric GILBERT</div></div>
+      <p class="lede">Deux chefs de centre, deux Gilbert : ce sont les oncles du créateur de ce jeu.</p>
+      <p>C'est en les regardant partir sur intervention, ici, à Argentré, qu'il a eu envie de devenir sapeur-pompier. Puis de transmettre la prévention. Puis de créer cette tournée.</p>
+      <p class="ref">Merci à eux. Et merci à tous les chefs de centre qui donnent, sans le savoir, des vocations.</p>`);
+    $('#atX').onclick = () => { closePanel(); res(); };
+    argFind('tableau');
+  });
+}
+/* ---- Un reflet, de temps en temps, sur le pin de Brocéliande ---- */
+function argMarks(ctx, ox, oy, z){
+  const m = scene?.mapId; if (m !== 'r7' && m !== 'argentre') return; const t = performance.now();
+  const ph = (t % 4200) / 4200; if (ph > .12) return;
+  const [x, y] = m === 'r7' ? [15, 10] : [16, 18]; const a = Math.sin(ph / .12 * Math.PI);
+  ctx.globalAlpha = a * .85; ctx.fillStyle = '#f6f3c8';
+  const X = ox + (x * 16 + 10) * z, Y = oy + (y * 16 + 5) * z; ctx.fillRect(X, Y - z, z, 3 * z); ctx.fillRect(X - z, Y, 3 * z, z); ctx.globalAlpha = 1;
+}
+
 const IN_TILE_BASE = { '#':'wall', '.':'floor', 'c':'boxes', 'X':'exitdoor', 'S':'shelf', 'R':'fridge', 'K':'counter', 'g':'ext', 'D':'mat' };
 const IN_BLOCK = new Set('#cFXpSRKBQegbn');
 const TEX = {};
@@ -5908,7 +6125,7 @@ ETAPES.forEach((e, i) => { e.n = i + 1; if (!e.badge) e.badge = 'e' + e.n; if (!
 const ETAPE = Object.fromEntries(ETAPES.map(e => [e.id, e]));
 const ROUTES = ETAPES.slice(0, -1).map((e, i) => ({ id:'r' + (i+1), n:i+1, kind:ROUTES_DEF[i][0], name:ROUTES_DEF[i][1], desc:ROUTES_DEF[i][2], from:e.id, to:ETAPES[i+1].id, themes:ROUTE_THEMES[i] }));
 const ROUTE = Object.fromEntries(ROUTES.map(r => [r.id, r]));
-const placeName = id => id === 'amphi' ? 'Amphithéâtre · ENSOSP' : id === 'em33' ? 'État-major SDIS 33' : id === 'garrigue' ? 'La Garrigue' : id === 'oudine' ? 'Oudiné' : ETAPE[id]?.name || ROUTE[id]?.name || SITES[id]?.name || id;
+const placeName = id => id === 'argentre' ? 'Argentré-du-Plessis' : id === 'argcaserne' ? 'Caserne d\'Argentré' : id === 'amphi' ? 'Amphithéâtre · ENSOSP' : id === 'em33' ? 'État-major SDIS 33' : id === 'garrigue' ? 'La Garrigue' : id === 'oudine' ? 'Oudiné' : ETAPE[id]?.name || ROUTE[id]?.name || SITES[id]?.name || id;
 const etapeOpen = e => e.n === 1 || S.badges.includes(ETAPES[e.n-2].badge);
 const badgeCount = () => ETAPES.filter(e => S.badges.includes(e.badge)).length;
 
@@ -6123,6 +6340,7 @@ const ROUTE_GEN = {
     rfill(t,28,7,34,11,'.'); rfill(t,20,1,22,2,'w');
     seg(t, [[0,12],[8,12],[8,6],[16,6],[16,13],[26,13],[26,4],[36,4],[36,10],[46,10],[46,7],[55,7]], '_');
     for (const [fx,fy] of [[30,9],[32,9],[31,10]]) t[fy][fx] = 'f';
+    if (r.n === 7){ t[9][15] = 'T'; t[10][15] = 'ŧ'; t[11][15] = 'T'; }
     return { W,H,t, wr:12, er:7, inc:[[18,9,'foret'],[30,4,'voiture'],[41,12,'cabane']], npcs:[[5,11,'down'],[32,6,'up']], signs:[[2,11],[53,6]], memo:[31,8,'x','bruz'] }; },
   falaises(r){ const W=58,H=18; const t = rbase(W,H,'.','T'); rfill(t,0,0,W-1,4,'w'); rfill(t,0,5,W-1,6,'K'); for (const [x,y] of [[30,2],[30,3],[31,2],[32,2],[32,3]]) t[y][x] = 'K';
     for (let x=2;x<W-2;x++) if (x % 7) t[15][x] = 'T';
@@ -6243,7 +6461,7 @@ function interiorMap(id){
 const MAPS = { town:townMap, store:() => interiorMap('store'), school:() => interiorMap('school') };
 for (const e of ETAPES) if (e.id !== 'town') MAPS[e.id] = () => zoneFinish(e.id, LAYOUTS[e.id]);
 for (const r of ROUTES) MAPS[r.id] = () => routeMap(r);
-MAPS.em33 = em33Map; MAPS.garrigue = garrigueMap; MAPS.oudine = oudineMap; MAPS.amphi = amphiMap; genSites();
+MAPS.em33 = em33Map; MAPS.garrigue = garrigueMap; MAPS.oudine = oudineMap; MAPS.amphi = amphiMap; MAPS.argentre = argentreMap; MAPS.argcaserne = argCaserneMap; genSites();
 
 /* ================= MOTEUR CANVAS ================= */
 let scene = null;
@@ -6312,7 +6530,7 @@ const World = {
     chars.sort((a,b) => a.y - b.y);
     for (const ch of chars){
       ctx.drawImage(TEX.t_shadow, Math.round(ch.x-6), Math.round(ch.y-3));
-      const veh = ch.who === 'baptiste' ? 'velo' : ch.who === 'player' && !this.M.interior ? (S.vehicle || 'pied') : 'pied'; const dk = ch.f==='left'||ch.f==='right'?'side':ch.f;
+      const veh = (ch.who === 'baptiste' || ch.who === 'baptiste_ap') ? 'velo' : ch.who === 'player' && !this.M.interior ? (S.vehicle || 'pied') : 'pied'; const dk = ch.f==='left'||ch.f==='right'?'side':ch.f;
       if (veh === 'velo'){ ctx.fillStyle = '#161a24'; if (dk === 'side'){ ctx.fillRect(Math.round(ch.x-8), Math.round(ch.y-5), 6, 5); ctx.fillRect(Math.round(ch.x+2), Math.round(ch.y-5), 6, 5); ctx.fillStyle = '#c8102e'; ctx.fillRect(Math.round(ch.x-5), Math.round(ch.y-6), 10, 1); } else { ctx.fillRect(Math.round(ch.x-1), Math.round(ch.y-7), 3, 8); ctx.fillStyle = '#c8102e'; ctx.fillRect(Math.round(ch.x-4), Math.round(ch.y-9), 8, 1); } }
       const img = ch.img || (veh === 'vtu' ? TEX[`veh_vtu_${dk}`] : TEX[`c_${ch.who}_${dk}`]);
       const X = Math.round(ch.x-8), Y = Math.round(ch.y-16-ch.b);
@@ -6326,7 +6544,7 @@ const World = {
     ctx.font = `${fs}px "Pixelify Sans", monospace`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     for (const l of this.labels){ const X = ox + l.x*z, Y = oy + l.y*z; const w = ctx.measureText(l.text).width + 6*z;
       ctx.fillStyle = '#161a24'; ctx.fillRect(Math.round(X-w/2), Math.round(Y-fs*.7), Math.round(w), Math.round(fs*1.4)); ctx.fillStyle = '#ffffff'; ctx.fillText(l.text, X, Y+1); }
-    netLabels(ctx, ox, oy, z, fs); netEmotes(ctx, ox, oy, z); questMarks(ctx, ox, oy, z); bookMarks(ctx, ox, oy, z);
+    netLabels(ctx, ox, oy, z, fs); netEmotes(ctx, ox, oy, z); questMarks(ctx, ox, oy, z); bookMarks(ctx, ox, oy, z); argMarks(ctx, ox, oy, z);
   },
   async onStep(){
     save(); netPub(); const k = this.px+','+this.py;
@@ -6350,6 +6568,7 @@ const World = {
     const [dx,dy] = DIRV[this.face]; const x = this.px+dx, y = this.py+dy; const k = x+','+y;
     const n = this.npcAt(x,y);
     if (n){ n.f = OPP[this.face]; await talk(n.id); refreshHud(); return; }
+    if (await argInteract(this, x, y)) { refreshHud(); return; }
     const pe = !this.M.interior && netPeerAt(x, y); if (pe){ await duelInvite(pe); return; }
     const inc = this.M.incidents?.find(i => i.x === x && i.y === y); if (inc){ await engage(inc); return; }
     const mm = this.M.memos?.[k]; if (mm){ await memorial(mm); refreshHud(); return; }
@@ -6381,6 +6600,7 @@ async function doorAction(id){
   const sc = scene; const back = () => sc.place(sc.px, sc.py+1, 'down');
   if (id === 'store') return enterSite('store');
   if (id === 'ecolejf') return enterSite('school');
+  if (await argDoor(id)) return;
   if (id === 'stairs'){ siteStairs(sc); return; }
   if (id === 'exitInterior'){ const e = siteExit(sc.mapId); sc.loadMap(e.map, e.x, e.y, e.f); return; }
   if (id === 'caserne'){ back(); const c = await choose("Centre de secours. Que veux-tu faire ?", ['Carnet de révision','Missions RCCI','Consulter le Réglementodex','Passer au vestiaire','Entraînement libre','Ressortir'], 'Plateau technique');
