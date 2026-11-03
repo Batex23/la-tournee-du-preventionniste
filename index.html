@@ -338,6 +338,7 @@ code{font-family:var(--f-disp);background:#e8edf3;color:var(--ink);padding:0 4px
 .teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.team{border:3px solid var(--tc);border-radius:8px;padding:8px 10px;background:#fff;display:flex;flex-direction:column}.team span{font-size:13px;color:var(--steel)}.tdot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}.gbar{height:18px;background:#e3e7ec;border:2px solid var(--ink);border-radius:9px;overflow:hidden}.gbar i{display:block;height:100%;background:linear-gradient(90deg,#f5c518,#c8102e)}#teach select,#teach input,#panel select{background:#fff;color:#14203a;border:2px solid #14203a;border-radius:6px;padding:4px 6px;font:inherit;color-scheme:light}
 .mdls{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.mdl{display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;border:3px solid var(--mc);border-radius:10px;padding:10px 8px;background:#fff;color:var(--ink)}.mdl .disc{width:38px;height:38px;border-radius:50%;background:var(--mc);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;border:2px solid #14203a}.mdl b{font-size:13.5px}.mdl span{font-size:12px;color:var(--steel)}.mdl .disc{font-size:22px;color:#fff}.mdl em{font-size:11px;font-style:normal;color:var(--mc);font-weight:700}.mdl.off{opacity:.55;border-style:dashed}.mdl.off .disc{background:#d5dae1;color:#5d6c84}.bracket{display:flex;gap:16px;overflow-x:auto;padding:8px 0}.bcol{display:flex;flex-direction:column;justify-content:space-around;gap:12px;min-width:200px}.bhead{font-family:var(--f-disp);text-align:center}.bmatch{border:2px solid var(--ink);border-radius:8px;background:#fff;overflow:hidden}.bmatch div{display:flex;justify-content:space-between;gap:8px;padding:6px 10px;font-size:clamp(14px,1.4vw,20px)}.bmatch div+div{border-top:1px solid #d5dae1}.bmatch .win{background:var(--green2);font-weight:700}
 #panel{z-index:42}
+.coin{display:inline-block;background:#f5c518;color:#14203a;font-weight:700;border-radius:999px;padding:0 8px}.chain{list-style:none;padding:0;margin:10px 0;display:grid;gap:8px}.chain li{display:flex;gap:10px;align-items:center;border:2px solid var(--ink);border-radius:10px;padding:8px 10px;background:#fff;color:var(--ink);position:relative}.chain li em{margin-left:auto;font-style:normal;font-size:12px;font-weight:700;color:#c8102e;white-space:nowrap}.cic{font-size:24px}
 .mhead{font-family:var(--f-disp);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--steel);margin:16px 0 6px}.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.mtile{display:flex;align-items:center;gap:10px;text-align:left;font:inherit;background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:10px;padding:10px 12px;cursor:pointer;min-height:56px;box-shadow:0 3px 0 var(--ink)}.mtile:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}.mtile.hot{background:#fff4d0;border-color:#c8102e;box-shadow:0 3px 0 #c8102e}.mic{font-size:24px;line-height:1;flex:none}.mtx{display:flex;flex-direction:column;line-height:1.2}.mtx b{font-size:15px}.mtx small{font-size:12px;color:var(--steel)}.mfoot{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;justify-content:center}
 .menugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:14px}.setrow{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #d5dae1;cursor:pointer}.setrow input{width:22px;height:22px;flex:none;margin-top:2px;accent-color:#c8102e;color-scheme:light}.hebdocard{border-left:4px solid #c8102e}.hebdocard .btn{margin-top:6px}body.bigtext #dbox,body.bigtext .dtext,body.bigtext #dialog{font-size:1.18em}body.bigtext .qtext{font-size:1.25em!important}body.bigtext .opt{font-size:1.12em}body.bigtext .lede,body.bigtext .note{font-size:1.1em}
 .shopgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:10px}.shopit{display:flex;flex-direction:column;gap:6px;border:2px solid var(--ink);border-radius:8px;padding:10px;background:#fff;color:var(--ink)}.shopit.eq{border-color:#2e9e5b;background:#e5f4e4}.shopit em{font-style:normal;font-weight:700;color:#2e9e5b}.shopit em.lock{color:var(--steel)}.shopit .sw{display:inline-block;width:18px;height:18px;border:2px solid var(--ink);border-radius:4px;margin-right:4px;vertical-align:middle}
@@ -414,7 +415,7 @@ code{font-family:var(--f-disp);background:#e8edf3;color:var(--ink);padding:0 4px
       <div><b id="mQ">0</b>questions</div>
       <div><b id="mT">0</b>thèmes</div>
       <div><b id="mP">–</b>joueurs classés</div>
-      <div><b>v0.22</b>version test</div>
+      <div><b>v0.23</b>version test</div>
     </div>
   </div>
 </div>
@@ -937,7 +938,7 @@ function inspect(siteId, key){
     setTimeout(() => P.querySelector('.vbtn')?.focus(), 30);
   });
 }
-const commissionXP = sc => Math.max(10, 50 + 15*sc.juste - 20*sc.over + (sc.juste === sc.total ? 50 : 0));
+const commissionXP = sc => Math.max(10, 20 + 5*sc.juste - 10*sc.over + (sc.juste === sc.total ? 20 : 0));
 function report(siteId, readonly){
   return new Promise(res => {
     const C = S.sites[siteId]; const site = SITES[siteId]; const sc = commissionScore(C);
@@ -1153,7 +1154,7 @@ function menuOld(){
 
 /* ================= HUD ================= */
 function refreshHud(){
-  tutoAdvance(); dailyCheck(); colCheck(); medalCheck(); netSync(); if (S.classe && cloud.db){ if (!CL.unsubG) classListen(); classBeat(); }
+  tutoAdvance(); dailyCheck(); colCheck(); medalCheck(); netSync(); setTimeout(creditWatch, 0); if (S.classe && cloud.db){ if (!CL.unsubG) classListen(); classBeat(); }
   $('#hname').textContent = S.name || 'Préventionniste';
   const lv = levelOf(S.xp); $('#hlvl').textContent = 'Niv. ' + lv.L; $('#hgrade').textContent = gradeOf(lv.L) + (S.titre ? ` · « ${S.titre} »` : ''); $('#hxp').style.width = (lv.into/lv.need*100) + '%';
   const mid = scene?.mapId || 'town'; const inSite = SITES[mid]; let o;
@@ -1169,7 +1170,7 @@ function refreshHud(){
   if (S.dispatch && S.dispatch.map === mid){ const inc = (scene.M.incidents || []).find(i => i.key === S.dispatch.key); if (inc && incActive(inc.key)) o = `Départ CTA : <b>${esc(INCIDENTS[inc.type].name)}</b> · ${Math.max(0, S.dispatch.limit - S.dispatch.steps)} pas pour le bonus de rapidité.`; }
   $('#obj').innerHTML = o;
   const zname = placeName(mid);
-  $('#badges').innerHTML = `<span class="badge on" title="Badges d'étape">${badgeCount()}</span><span class="bdet" style="font-size:12px;color:var(--steel2);margin-left:4px;align-self:center">/ ${ETAPES.length} badges · ${S.credits||0} crédits · ${esc(zname)}</span>${dailyHud()}${S.classe ? `<button type="button" class="hmis" id="hCls" style="background:#fff">Classe ${esc(S.classe)}${defisPourMoi().length ? ` · ${defisPourMoi().length} défi${defisPourMoi().length > 1 ? 's' : ''}` : ''}</button>` : ''}${S.classe && NET.room ? '<button type="button" class="hmis" id="hEmo" style="background:#fff" aria-label="Émotes">😀</button>' : ''}`;
+  $('#badges').innerHTML = `<span class="badge on" title="Badges d'étape">${badgeCount()}</span><span class="bdet" style="font-size:12px;color:var(--steel2);margin-left:4px;align-self:center">/ ${ETAPES.length} badges · <span class="coin" id="hCoin">🪙 ${S.credits||0}</span> · ${esc(zname)}</span>${dailyHud()}${S.classe ? `<button type="button" class="hmis" id="hCls" style="background:#fff">Classe ${esc(S.classe)}${defisPourMoi().length ? ` · ${defisPourMoi().length} défi${defisPourMoi().length > 1 ? 's' : ''}` : ''}</button>` : ''}${S.classe && NET.room ? '<button type="button" class="hmis" id="hEmo" style="background:#fff" aria-label="Émotes">😀</button>' : ''}`;
   if ($('#hEmo')) $('#hEmo').onclick = () => { if (!busy()) emoteMenu(); };
   if ($('#hCls')) $('#hCls').onclick = () => { if (!busy()) classPanel(); };
   if ($('#hMis')) $('#hMis').onclick = () => { if (!busy()) dailyPanel(); };
@@ -1572,7 +1573,7 @@ function tutoObjective(){ if (S.tuto === undefined || S.tuto >= TUTO.length) ret
 function tutoAdvance(){
   if (S.tuto === 2 && S.defeated.bertin) S.tuto = 3;
   if (S.tuto === 3 && (S.siteCount.store || 0) >= 1) S.tuto = 4;
-  if (S.tuto === 4 && S.badges.includes('classement')){ S.tuto = TUTO.length; toast('Tutoriel terminé', 'La route Napoléon t\'attend, à l\'est.'); }
+  if (S.tuto === 4 && S.badges.includes('classement')){ S.tuto = TUTO.length; toast('Tutoriel terminé', 'La route Napoléon t\'attend, à l\'est.'); setTimeout(() => { if (!S.seenProgHelp){ S.seenProgHelp = true; save(); progressionHelp(); } }, 1500); }
 }
 async function rocheTuto(){
   const n = NPCS.roche.name;
@@ -2380,11 +2381,11 @@ async function duelEnd(){
   const D = NET.duel; if (!D?.mine || !D.op || D.done) return; D.done = true;
   const win = D.mine.sc > D.op.sc || (D.mine.sc === D.op.sc && D.mine.ms < D.op.ms), tie = D.mine.sc === D.op.sc && D.mine.ms === D.op.ms;
   S.duels = S.duels || { w:0, l:0 }; if (win) S.duels.w++; else if (!tie) S.duels.l++;
-  if (!win && !tie){ const lost = Math.min(S.credits || 0, 5); S.credits = (S.credits || 0) - lost; } else S.credits = (S.credits || 0) + (win ? 10 : 0);
+  S.credits = (S.credits || 0) + (win ? 10 : 0);
   save(); NET.duel = null; setTimeout(() => netPub({ duel:null }), 8000);
   await say([`${win ? 'Victoire' : tie ? 'Égalité' : 'Défaite'} face à ${D.name} : ${D.mine.sc}/5 contre ${D.op.sc}/5${D.mine.sc === D.op.sc ? ` (${Math.round(D.mine.ms/1000)} s contre ${Math.round(D.op.ms/1000)} s)` : ''}.`,
-    win ? 'Tu gagnes 10 crédits.' : tie ? 'Personne ne perd rien.' : 'Tu perds 5 crédits. Revanche ?'], 'Duel');
-  if (win) gain(40, `Duel gagné contre ${D.name}`); else refreshHud();
+    win ? 'Tu gagnes 60 XP et 10 crédits.' : tie ? 'Égalité : 25 XP chacun.' : 'Tu gagnes quand même 15 XP de participation. Revanche ?'], 'Duel');
+  gain(win ? 60 : tie ? 25 : 15, win ? `Duel gagné contre ${D.name}` : `Duel contre ${D.name}`);
 }
 
 /* ---- La Garrigue : le bar des officiers (entrée cachée de l'ENSOSP) ---- */
@@ -4735,6 +4736,7 @@ async function examGate(n){
 }
 function badgeObjective(nextE){
   if (!nextE || nextE.n < 2) return null;
+  const po = typeof progressObjective === 'function' ? progressObjective(nextE) : null; if (po) return po;
   const req = cityReq(nextE), done = cityDone(nextE.id);
   if (done >= req) return nextE.id === 'paris' && !S.rival?.boss && typeof confGate === 'function' ? `Paris : trouve et bats le <b>Président du Cabinet Conformis</b> avant l'examen final.` : null;
   return `Étape ${nextE.n}, <b>${esc(nextE.name)}</b> : réalise ${req} ${plural(req, 'commission')} de sécurité (${done}/${req}) avant l'examen à la caserne.`;
@@ -5026,7 +5028,7 @@ async function megafeuTalk(){
 MEDALS.push(['megafeu', 'Mégafeu de Gironde', 'Traiter les reprises du mégafeu de juillet 2026, route des Vignobles', 'o', s => s.megafeu?.st === 'done']);
 
 /* ================= v19 : RETOURS DES TESTEURS · EFFETS ET SENSATIONS ================= */
-const GAME_VER = 'v0.22';
+const GAME_VER = 'v0.23';
 const reduceMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
 const buzz = p => { try { if (S?.vibe !== false && navigator.vibrate) navigator.vibrate(p); } catch(e){} };
 
@@ -5350,6 +5352,7 @@ function menu(){
       ['mQuest', '📜', 'Quêtes', '', quests],
       ['mCarn', '📘', 'Révisions', `${dueList().length} à revoir`, true],
       ['mTrain', '🎯', 'Entraînement', '', true],
+      ['mProg', '🧭', 'Comment progresser', `niveau ${curLevel()}`, true],
     ]],
     ['Ma progression', [
       ['mMedal', '🏅', 'Médailles', nMed ? `${nMed} / ${MEDALS.length}` : '', true],
@@ -5368,7 +5371,7 @@ function menu(){
     <div class="mfoot"><button type="button" class="btn alt sm" id="mSet">⚙️ Réglages</button><button type="button" class="btn alt sm" id="mAvis">💬 Donner mon avis</button></div>`);
   $('#mX').onclick = closePanel;
   const on = (id, f) => { const b = $('#' + id); if (b) b.onclick = f; };
-  on('mHebdo', hebdoPanel); on('mQuest', questsPanel); on('mCarn', carnet); on('mTrain', trainingPanel);
+  on('mHebdo', hebdoPanel); on('mQuest', questsPanel); on('mCarn', carnet); on('mTrain', trainingPanel); on('mProg', progressionHelp);
   on('mMedal', medalsPanel); on('mAlbum', () => album()); on('mShop', () => boutique()); on('mWard', wardrobe); on('mRank', leaderboard);
   on('mClass', classPanel); on('mTeach', () => { closePanel(); teacherHome(); });
   on('mSet', settingsPanel); on('mAvis', () => { closePanel(); feedbackPanel(); });
@@ -5608,6 +5611,73 @@ function siteStairs(sc){
   M.t.forEach((r, y) => r.forEach((c, x) => { if (c === 'E' && Math.abs(x - here) > 4) tgt = [x, y]; }));
   if (!tgt) return; sc.place(tgt[0], tgt[1] - 1, 'up');
   toast(tgt[0] >= 18 + FLOOR_GAP ? '1er étage' : 'Rez-de-chaussée', SITES[sc.mapId]?.short || '');
+}
+
+/* ================= v23 : CHAÎNE DE PROGRESSION =================
+   Combats → XP → niveau → habilitation pour les commissions → commissions (crédits) → examen → badge → ville suivante. */
+/* ---- Habilitation : niveau requis pour mener la commission d'un établissement ---- */
+function siteReq(id){
+  const s = SITES[id]; if (!s) return 1; if (s.req) return s.req;
+  const e = ETAPES.find(x => x.id === s.exit?.map); if (!e || e.n < 2) return 1;
+  const big = /^[23]e/.test(s.cat || ''); return e.n + (e.n <= 5 ? 2 : e.n <= 10 ? 3 : 4) + (big ? 1 : 0);
+}
+const curLevel = () => levelOf(S.xp).L;
+function xpToLevel(L){ let x = 0; for (let l = 1; l < L; l++) x += stepCost(l); return Math.max(0, x - S.xp); }
+async function siteGate(id){
+  if ((DEV.on && DEV.nogate) || (S.siteCount?.[id] || 0) >= 1 || S.sites?.[id]?.reportDone) return true;
+  const req = siteReq(id), L = curLevel(); if (L >= req) return true;
+  const s = SITES[id];
+  await say([`${s.short} : la commission de cet établissement demande l'habilitation de niveau ${req}. Tu es niveau ${L}.`,
+    `Il te manque ${xpToLevel(req)} XP. Pour progresser : défie les préventionnistes de la ville, éteins des feux sur les routes, relève les duels du Cabinet Conformis ou affronte tes collègues de classe.`,
+    "Reviens quand tu auras le niveau : l'exploitant t'attendra."], 'Secrétariat de la commission');
+  if (!S.seenProgHelp){ S.seenProgHelp = true; save(); progressionHelp(); }
+  return false;
+}
+function labelWithReq(b){
+  const sid = b.site; if (!sid || !SITES[sid] || (S.siteCount?.[sid] || 0) >= 1) return b.label;
+  const req = siteReq(sid); if (req <= 1) return b.label;
+  return `${b.label} · ${curLevel() >= req ? '' : '🔒 '}NIV ${req}`;
+}
+/* ---- Récompenses : les commissions donnent des crédits, les combats de l'XP ---- */
+const commissionCredits = sc => 10 + 2*sc.juste + (sc.juste === sc.total ? 10 : 0);
+/* ---- Revanches : XP complète une fois par jour et par adversaire ---- */
+async function rematch(id){
+  const n = NPCS[id]; S.rematchDay = S.rematchDay || {};
+  const today = dayKey(); const fresh = S.rematchDay[id] !== today;
+  if (!fresh) toast('Revanche du jour déjà faite', 'XP réduite : reviens demain pour le plein.');
+  const r = await battle({ ...n, xp:fresh ? Math.round((n.xp || 20) * .6) : 0 });
+  if (r.win && fresh){ S.rematchDay[id] = today; save(); }
+  refreshHud(); return r;
+}
+/* ---- Les crédits se voient : chaque gain s'affiche ---- */
+let lastCredits = null;
+function creditWatch(){
+  const c = S?.credits || 0; if (lastCredits === null || !S.created){ lastCredits = c; return; }
+  const d = c - lastCredits; lastCredits = c; if (!d) return;
+  const pill = $('#hCoin'); if (pill){ anim(pill, 'pop'); fxFloat(pill, `${d > 0 ? '+' : ''}${d} 🪙`, d > 0 ? 'gold' : ''); }
+}
+/* ---- Explication de la chaîne ---- */
+function progressionHelp(){
+  const L = curLevel(); const next = ETAPES.find(e => !S.badges.includes(e.badge));
+  const steps = [
+    ['⚔️', 'Combats', 'Préventionnistes des villes et des routes, feux, Cabinet Conformis, duels entre collègues.', 'XP'],
+    ['⭐', 'Niveau', `Tu es niveau ${L}. Chaque niveau élargit ton habilitation.`, 'habilitation'],
+    ['🏢', 'Commissions', 'Chaque établissement demande un niveau minimum (NIV sur son enseigne).', 'crédits'],
+    ['🎓', 'Examen', 'Le maître des badges exige des commissions dans sa ville.', 'badge'],
+    ['🏅', 'Badge', next ? `Prochain : ${next.name}.` : 'Tous les badges sont à toi !', 'ville suivante'],
+  ];
+  panel(`<button type="button" class="btn alt close" id="phX">Fermer</button><div class="eyebrow">Comment progresser</div><h2>De la formation au badge</h2>
+    <ol class="chain">${steps.map(([ic, t, d, gain], i) => `<li><span class="cic" aria-hidden="true">${ic}</span><span><b>${t}</b><br><span class="ref">${esc(d)}</span></span>${i < steps.length - 1 ? `<em>→ ${gain}</em>` : ''}</li>`).join('')}</ol>
+    <p class="lede">Les crédits (🪙) se gagnent surtout avec les commissions. Ils servent aux jokers du centre SSIAP et à la boutique du vestiaire. En combat, un duel gagné rapporte bien plus qu'un duel perdu.</p>`);
+  $('#phX').onclick = closePanel;
+}
+function progressObjective(nextE){
+  if (!nextE || nextE.n < 2) return null; const L = curLevel();
+  const todo = citySites(nextE.id).filter(k => !siteDoneOnce(k)).sort((a, b) => siteReq(a) - siteReq(b));
+  if (!todo.length || cityDone(nextE.id) >= cityReq(nextE)) return null;
+  const k = todo[0], req = siteReq(k);
+  if (L >= req) return null;
+  return `Habilitation : niveau <b>${req}</b> requis pour ${esc(SITES[k].short)} (${esc(nextE.name)}). Il te manque ${xpToLevel(req)} XP : combats, feux, duels.`;
 }
 
 const IN_TILE_BASE = { '#':'wall', '.':'floor', 'c':'boxes', 'X':'exitdoor', 'S':'shelf', 'R':'fridge', 'K':'counter', 'g':'ext', 'D':'mat' };
@@ -6098,7 +6168,7 @@ const World = {
     for (let y=0;y<M.H;y++) for (let x=0;x<M.W;x++) c.drawImage(TEX[M.keyAt(x,y)], x*16, y*16);
     for (const b of M.buildings) c.drawImage(TEX['b_'+b.id], b.x*16, b.y*16);
     this.bg = bg;
-    this.labels = M.buildings.filter(b => b.label).map(b => ({ x:(b.x+b.w/2)*16, y:b.y*16+9, text:b.label }));
+    this.labels = M.buildings.filter(b => b.label).map(b => ({ x:(b.x+b.w/2)*16, y:b.y*16+9, text:labelWithReq(b) }));
     this.spots = Object.entries(M.spots || {}).map(([k,key]) => { const [x,y] = k.split(',').map(Number); return { x, y, key }; });
     this.npcs = M.npcs.map(([nid,x,y,f]) => ({ id:nid, x, y, f })); extraNpcs(this);
     this.place(sx, sy, face); this.camC = null; refreshHud(); netPub();
@@ -6215,7 +6285,7 @@ async function doorAction(id){
   if (id === 'amphi'){ sc.loadMap('amphi', 9, 8, 'up'); toast('Amphithéâtre', 'Salles de cours de l\'ENSOSP'); return; }
   if (id === 'exitAmphi'){ const d = townDoor('amphi'); sc.loadMap('town', d[0], d[1]+1, 'down'); return; }
   if (id === 'hotel'){ back(); await hotelMenu(); return; }
-  if (SITES[id] && id !== 'store' && id !== 'school'){ return enterSite(id); }
+  if (SITES[id] && id !== 'store' && id !== 'school'){ if (!(await siteGate(id))){ back(); return; } return enterSite(id); }
   if (id === 'garrigueb'){ sc.loadMap('garrigue', 7, 6, 'up'); toast('La Garrigue', 'Le bar des officiers'); if (findSecret('garrigue', 80, 30)) await say(["Te voilà à la Garrigue, le bar des officiers de l'ENSOSP.","Laisse ton mot sur le mur du fond : il restera pour tous les joueurs."], 'La Garrigue'); return; }
   if (id === 'exitGarrigue'){ const d = townDoor('garrigueb'); sc.loadMap('town', d[0], d[1]+1, 'down'); return; }
   if (id === 'oudine'){ sc.loadMap('oudine', 9, 6, 'up'); toast('Oudiné', 'Le grand lieu de la prévention'); return; }
@@ -6251,7 +6321,8 @@ async function talkDirector(siteId){
     if (sc.juste === sc.total) S.perfect = (S.perfect||0) + 1;
     S.history = [{ site:siteId, n:C.n, juste:sc.juste, over:sc.over, at:Date.now() }, ...(S.history||[])].slice(0, 20);
     checkUnlocks(ub);
-    gain(commissionXP(sc), `${site.short} · commission n°${C.n} : ${sc.juste}/${sc.total}`);
+    S.credits = (S.credits||0) + commissionCredits(sc);
+    gain(commissionXP(sc), `${site.short} · commission n°${C.n} : ${sc.juste}/${sc.total} · +${commissionCredits(sc)} crédits`);
     save();
   }
   if (!C.contestDone){
@@ -6276,12 +6347,12 @@ async function talk(id){
     if (await rocheTuto()) return;
     const c = await choose("Alors, cette tournée ? Je peux t'aider.", ["Rappelle-moi l'objectif",'Comment monter au classement ?','Et le tour de France ?',"Je veux m'entraîner",'Rien, merci'], n.name);
     if (c === 0) await say(["Le supermarché L'Épi d'Or, au nord-est, attend ses commissions périodiques. Huit points à juger : conforme ou non conforme.","Ensuite, défends ton rapport face à la direction. Les intervenants de chaque quartier te testeront sur la réglementation."], n.name);
-    if (c === 1) await say(["Chaque commission rapporte de l'expérience : 50 points de base, 15 par jugement juste, 50 de bonus pour un sans-faute. Une prescription injustifiée en coûte 20.","Les combats et l'entraînement rapportent un peu plus. Tes niveaux débloquent des grades, des tenues et de nouveaux quartiers."], n.name);
+    if (c === 1) await say(["Les combats te font monter en niveau : préventionnistes des villes et des routes, feux, duels entre collègues. Le gagnant d'un duel gagne bien plus que le perdant.","Chaque établissement demande un niveau d'habilitation, affiché sur son enseigne. Les commissions rapportent surtout des crédits, et elles ouvrent l'examen du badge."], n.name);
     if (c === 2) await say(["Quinze étapes, de l'ENSOSP à Paris, en passant par les dix plus grandes villes de France.","Dans chaque ville, l'examinateur de la caserne te remet un badge qui ouvre la route suivante. Sur les routes, le CTA t'engage sur des feux. Consulte la carte de France pour suivre ton tour."], n.name);
     if (c === 3) trainingPanel();
     return;
   }
-  if (S.defeated[id]){ const c = await choose(n.after, ['Revanche !','Au revoir'], n.name); if (c === 0) await fight(id); return; }
+  if (S.defeated[id]){ const c = await choose(n.after, ['Revanche !','Au revoir'], n.name); if (c === 0) await rematch(id); return; }
   await say(n.intro, n.name);
   const c = await choose(`${n.name} te défie : ${n.hp} bonnes réponses pour gagner, 3 erreurs maximum.`, ['Accepter le combat','Refuser'], n.name);
   if (c === 0) await fight(id);
