@@ -414,7 +414,7 @@ code{font-family:var(--f-disp);background:#e8edf3;color:var(--ink);padding:0 4px
       <div><b id="mQ">0</b>questions</div>
       <div><b id="mT">0</b>thèmes</div>
       <div><b id="mP">–</b>joueurs classés</div>
-      <div><b>v0.21</b>version test</div>
+      <div><b>v0.22</b>version test</div>
     </div>
   </div>
 </div>
@@ -2801,9 +2801,11 @@ function genSites(){
       if (!b.locked || !b.label || !b.door) continue; const m = String(b.label).match(TYPE_RE); if (!m) continue;
       const type = m[1]; if (['CTS','SG','PS','EF','REF'].includes(type)) continue;
       const id = b.id; const r = rngFor(e.n*53 + b.x, b.y*29 + b.w); const L = LIEUX[type] || LIEUX['*'];
-      const LIB = type === 'U' ? POINT_LIB_U : POINT_LIB;
-      const order = type === 'U' ? ['p','F','A','L','H','C','Q','B','d','n','e'] : ['p','b','e','C','B','A','F', ...(EXTRA_BY_TYPE[type] || [])].filter((k, i, a) => a.indexOf(k) === i);
-      const nPts = Math.min(order.length, type === 'U' ? 6 + Math.floor(e.n / 5) : 4 + Math.floor(e.n / 2)); const keys = order.slice(0, nPts);
+      const TL = typeof TYPE_LIBS !== 'undefined' ? TYPE_LIBS[type] : null;
+      const LIB = type === 'U' ? POINT_LIB_U : TL ? { ...POINT_LIB, ...TL.lib } : POINT_LIB;
+      const order = type === 'U' ? ['p','F','A','L','H','C','Q','B','d','n','e'] : TL ? TL.order : ['p','b','e','C','B','A','F', ...(EXTRA_BY_TYPE[type] || [])].filter((k, i, a) => a.indexOf(k) === i);
+      const nPts = Math.min(order.length, type === 'U' ? 6 + Math.floor(e.n / 5) : TL ? 5 + Math.floor(e.n / 3) : 4 + Math.floor(e.n / 2)); const keys = order.slice(0, nPts);
+      const floors = (e.n >= 8 || nPts >= 8) && typeof siteRows2 === 'function' ? 2 : 1;
       const pe = e.n < 4; const points = Object.fromEntries(keys.map(k => { const P = LIB[k]; return [k, { titre:P.titre, ref:(pe && P.refPE) || P.ref, ok:{ obs:fillLieu(P.ok.obs, L), why:P.ok.why }, nc:{ obs:fillLieu(P.nc.obs, L), why:P.nc.why }, bad:fillLieu(P.bad, L), good:fillLieu(P.good, L) }]; }));
       const nFirst = Math.min(keys.length - 1, 2 + Math.floor(e.n / 5)); const first = keys.slice().sort(() => r() - .5).slice(0, nFirst);
       const name = String(b.label).replace(/\s*·.*$/, '').toLowerCase().replace(/(^|\s|-|')\S/g, s => s.toUpperCase());
@@ -2816,11 +2818,11 @@ function genSites(){
         fireTime:['Lundi, 21 h 10','Mercredi, 14 h 30','Vendredi, 23 h 45','Samedi, 11 h 05'][Math.floor(r()*4)], fireTitle:`Départ de feu · ${name}`,
         fireStart:fillLieu('Un départ de feu se produit dans {local}.', L),
         greet:[`Bonjour ! Vous venez pour la visite de la commission ? Je suis ${NPCS[did].name}, l'exploitant.`, "Faites votre tour, et venez me voir quand vous aurez fini."], again:"Re-bonjour ! On a fait quelques changements depuis votre dernière visite…" };
-      const rows = siteRows(type, keys); const blockChars = '#XtSKkjB' + keys.join('');
+      const rows = floors > 1 ? siteRows2(type, keys, 2) : typeof siteRows2 === 'function' ? siteRows2(type, keys, 1) : siteRows(type, keys); const blockChars = '#XtSKkjBywzV' + keys.join('');
       INTERIORS[id] = { rows, block:blockChars, npcs:[[did, 12, 8, 'down']],
-        base:{ '#':'wall', '.':'floor', 'D':'mat', 'X':'exitdoor', t:'table', S:'shelf', K:'counter', k:'boxes', j:'bed' },
+        base:{ '#':'wall', '.':'floor', 'D':'mat', 'X':'exitdoor', 'E':'stairs', t:'table', S:'shelf', K:'counter', k:'boxes', j:'bed', y:'seat', w:'stove', z:'stage', V:'void' },
         dyn: st => Object.fromEntries(keys.map(k => [k, LIB[k].tiles[st[k] ? 1 : 0]])), tweak(){},
-        flavor:{ t:'Tables et chaises bien alignées.', S:'Des rayonnages bien rangés.', K:'Un comptoir.', k:'Du matériel rangé.', j:'Un lit fait au carré.' } };
+        flavor:{ t:'Tables et chaises bien alignées.', S:'Des rayonnages bien rangés.', K:'Un comptoir.', k:'Du matériel rangé.', j:'Un lit fait au carré.', y:'Des fauteuils de spectacle.', w:'Le piano de cuisson.', z:'La scène.' }, floors };
       MAPS[id] = () => interiorMap(id);
       b.locked = false; b.site = id; b.msg = null;
     }
@@ -5024,7 +5026,7 @@ async function megafeuTalk(){
 MEDALS.push(['megafeu', 'Mégafeu de Gironde', 'Traiter les reprises du mégafeu de juillet 2026, route des Vignobles', 'o', s => s.megafeu?.st === 'done']);
 
 /* ================= v19 : RETOURS DES TESTEURS · EFFETS ET SENSATIONS ================= */
-const GAME_VER = 'v0.21';
+const GAME_VER = 'v0.22';
 const reduceMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
 const buzz = p => { try { if (S?.vibe !== false && navigator.vibrate) navigator.vibrate(p); } catch(e){} };
 
@@ -5419,6 +5421,194 @@ setTimeout(() => { const cv = $('#cv'); if (cv) cv.addEventListener('pointerdown
 function hebdoCard(P){ if (badgeCount() < 1) return; const H = hebdoState(); const h = P.querySelector('h2'); if (!h) return;
   const d = document.createElement('div'); d.className = 'note hebdocard'; d.innerHTML = `<strong>Défi de la semaine</strong> · ${H.best ? `ton score : ${H.best.good}/${HEBDO_N}` : 'les mêmes 10 questions pour tous les joueurs'}<br><button class="btn warn sm" type="button" id="hbOpen">${H.best ? 'Voir le classement' : 'Relever le défi'}</button>`;
   h.after(d); $('#hbOpen').onclick = hebdoPanel; }
+
+/* ================= v22 : COMMISSIONS SPÉCIFIQUES À CHAQUE TYPE D'ERP · ÉTAGES ================= */
+/* ---- Nouvelles tuiles ---- */
+const TD_ = (c, col, x, y, w, h) => { c.fillStyle = col; c.fillRect(x, y, w, h); };
+TILE_DRAW.hood = function(c){ TILE_DRAW.wall(c); TD_(c,'#8f99aa',1,3,14,7); TD_(c,'#c9ced8',2,4,12,5); for (let x = 3; x < 13; x += 2) TD_(c,'#5d6c84',x,5,1,3); TD_(c,'#2b3140',1,10,14,1); };
+TILE_DRAW.hoodgrease = function(c){ TILE_DRAW.hood(c); TD_(c,'#6b4a2b',2,4,12,5); for (const [x,y] of [[4,8],[9,9],[12,8]]) TD_(c,'#4a3220',x,y,1,3); TD_(c,'#3a2614',3,5,10,1); };
+TILE_DRAW.aru = function(c){ TILE_DRAW.wall(c); TD_(c,'#f5c518',4,3,8,9); TD_(c,'#161a24',4,3,8,1); TD_(c,'#c8102e',6,6,4,4); TD_(c,'#ffffff',7,7,2,2); };
+TILE_DRAW.aruhidden = function(c){ TILE_DRAW.aru(c); TD_(c,'#a8946c',2,2,12,12); TD_(c,'#8a7652',2,6,12,1); TD_(c,'#8a7652',2,10,12,1); };
+TILE_DRAW.seat = function(c){ TILE_DRAW.floor(c); TD_(c,'#7a1020',2,3,12,8); TD_(c,'#a8162b',3,4,10,5); TD_(c,'#5a0c18',2,11,2,3); TD_(c,'#5a0c18',12,11,2,3); };
+TILE_DRAW.seats = function(c){ TILE_DRAW.floor(c); TD_(c,'#f5c518',0,7,16,2); TD_(c,'#ffffff',2,3,12,2); TD_(c,'#2e9e5b',6,10,4,3); };
+TILE_DRAW.seatsblock = function(c){ TILE_DRAW.floor(c); TD_(c,'#f5c518',0,7,16,2); TD_(c,'#2b3140',3,2,10,10); TD_(c,'#5d6c84',4,3,8,4); TD_(c,'#2b3140',3,12,2,3); TD_(c,'#2b3140',11,12,2,3); };
+TILE_DRAW.stage = function(c){ TD_(c,'#5b3a1e',0,0,16,16); for (let y = 3; y < 16; y += 4) TD_(c,'#4a2e17',0,y,16,1); TD_(c,'#8a1424',0,0,3,16); TD_(c,'#8a1424',13,0,3,16); };
+TILE_DRAW.stagedust = function(c){ TILE_DRAW.stage(c); TD_(c,'rgba(200,200,190,.55)',3,0,10,16); TD_(c,'#e9e4dc',6,5,1,1); TD_(c,'#e9e4dc',9,11,1,1); TD_(c,'#ff6a1a',8,7,2,1); };
+TILE_DRAW.carts = function(c){ TILE_DRAW.floor(c); TD_(c,'#f5c518',0,1,16,1); TD_(c,'#f5c518',0,14,16,1); for (const x of [2,6,10]) { TD_(c,'#8f99aa',x,4,4,6); TD_(c,'#161a24',x,11,1,1); TD_(c,'#161a24',x+3,11,1,1); } };
+TILE_DRAW.cartsblock = function(c){ TILE_DRAW.floor(c); for (const [x,y] of [[1,2],[7,5],[3,9],[9,10]]) { TD_(c,'#8f99aa',x,y,5,4); TD_(c,'#161a24',x,y+4,1,1); TD_(c,'#161a24',x+4,y+4,1,1); } };
+TILE_DRAW.lab = function(c){ TILE_DRAW.floor(c); TD_(c,'#e9e4dc',1,4,14,8); TD_(c,'#5d6c84',1,12,14,2); TD_(c,'#3f86c4',4,6,2,4); TD_(c,'#2e9e5b',9,7,2,3); };
+TILE_DRAW.labfull = function(c){ TILE_DRAW.lab(c); for (const [x,y,col] of [[2,2,'#c8102e'],[5,1,'#f5c518'],[7,3,'#3f86c4'],[11,1,'#ff6a1a'],[13,3,'#c8102e'],[3,5,'#2e9e5b'],[12,6,'#f5c518']]) { TD_(c,col,x,y,2,5); TD_(c,'#161a24',x,y,2,1); } };
+TILE_DRAW.stove = function(c){ TILE_DRAW.floor(c); TD_(c,'#8f99aa',1,2,14,12); TD_(c,'#2b3140',2,3,12,5); TD_(c,'#ff6a1a',4,4,2,2); TD_(c,'#ff6a1a',10,4,2,2); TD_(c,'#5d6c84',2,9,12,4); };
+TILE_DRAW.roomdoor = function(c){ TILE_DRAW.wall(c); TD_(c,'#8a5a3b',3,1,10,15); TD_(c,'#6b4423',3,1,10,1); TD_(c,'#f5c518',11,8,1,2); TD_(c,'#161a24',4,2,8,1); };
+TILE_DRAW.roomdoorwedge = function(c){ TILE_DRAW.roomdoor(c); TD_(c,'#161a24',2,1,1,15); TD_(c,'#2e9e5b',10,13,4,3); };
+
+/* ---- Points de visite propres à chaque type ---- */
+const PT_ = (titre, ref, tiles, okObs, okWhy, ncObs, ncWhy, bad, good) => ({ titre, ref, tiles, ok:{ obs:okObs, why:okWhy }, nc:{ obs:ncObs, why:ncWhy }, bad, good });
+const TYPE_LIBS = {
+  O:{ furn:'j', order:['p','F','A','C','H','Q','e','b','B','n'], lib:{
+    p:PT_('Circulation des chambres', 'Art. O 6 § 1 : circulations de 2 unités de passage au moins', ['exitzone','pallets'],
+      "Circulation de l'étage dégagée sur ses deux unités de passage, balisage visible jusqu'à l'escalier.", "Les circulations reliant escaliers et sorties ont au moins 2 UP (O 6) : conforme.",
+      "Des chariots de ménage et des valises stationnent dans la circulation, il ne reste qu'un passage étroit.", "Dans un hôtel, les clients évacuent souvent de nuit, réveillés par l'alarme : les circulations gardent leurs 2 UP au moins (O 6 § 1).",
+      "Dans la fumée, les clients butent sur les chariots de la circulation.", "La circulation dégagée permet aux clients de rejoindre l'escalier rapidement."),
+    F:PT_('Porte de chambre et ferme-porte', 'Art. O 6 § 2 : ferme-porte sur toutes les portes des chambres donnant sur les dégagements', ['roomdoor','roomdoorwedge'],
+      "Porte de chambre ouverte puis lâchée : elle se referme seule grâce à son ferme-porte.", "Les portes ouvrant sur les dégagements des locaux à sommeil ont un ferme-porte (O 6 § 2) : conforme.",
+      "La porte de la chambre 12 est calée ouverte avec un coin en bois, le ferme-porte est décroché.", "Toutes les portes des chambres donnant sur les dégagements ont un ferme-porte (O 6 § 2) : une porte qui se referme bloque la fumée dans la chambre.",
+      "La porte calée laisse la fumée de la chambre envahir toute la circulation.", "Refermée seule, la porte confine le feu dans la chambre."),
+    A:PT_('Détection automatique', 'Art. O 19 : SSI de catégorie A, détection dans les chambres, circulations et locaux à risques', ['alarm','alarmhidden'],
+      "Détecteur en place dans la chambre et dans la circulation, voyants de fonctionnement visibles.", "Détection dans les chambres, les circulations et les locaux à risques (O 19 § 2) : conforme.",
+      "Le détecteur de la circulation a été démonté pendant la réfection du faux plafond et jamais remis.", "La détection des circulations des niveaux à sommeil déclenche l'évacuation et le compartimentage (O 19 § 3). Sans détecteur, l'alarme arrive trop tard.",
+      "Les clients endormis ne sont réveillés que par l'odeur de fumée.", "La détection réveille l'hôtel dès les premières fumées."),
+    C:PT_('Consigne dans chaque chambre', 'Art. O 21 § 2 : consigne incendie illustrée dans chaque chambre, plan d\'évacuation à chaque niveau', ['plan','planempty'],
+      "Derrière la porte de la chambre : la consigne incendie illustrée, en français et en anglais, avec le plan de l'étage.", "Consigne affichée dans chaque chambre (O 21 § 2) : conforme.",
+      "Dans plusieurs chambres refaites, la consigne derrière la porte a disparu.", "Une consigne d'incendie, illustrée, est affichée dans chaque chambre (O 21 § 2). Le client de passage ne connaît pas les lieux : c'est sa seule aide.",
+      "Un client désorienté part vers le mauvais escalier, en plein dans la fumée.", "Le client suit la consigne et le plan : il rejoint le bon escalier."),
+    H:PT_('Lingerie et bagagerie', 'Art. O 5 : réserves, lingeries et bagageries sont des locaux à risques moyens', ['boilerclosed','boileropen'],
+      "Lingerie fermée par sa porte coupe-feu à ferme-porte, affichage « Interdit de fumer » en place.", "Local à risques moyens isolé (O 5, CO 28) et interdiction de fumer affichée (O 21 § 1) : conforme.",
+      "La porte de la lingerie est maintenue ouverte par un sac de draps, un cendrier plein traîne sur l'étagère.", "Lingeries et bagageries sont des locaux à risques moyens (O 5) : porte coupe-feu fermée. Fumer y est formellement interdit (O 21 § 1).",
+      "Le feu parti de la lingerie gagne la circulation par la porte ouverte.", "La porte fermée retient le feu de la lingerie."),
+    Q:PT_('Tableau du SSI à l\'accueil', 'Art. O 19 § 1 et O 20 : SSI de catégorie A, alerte par téléphone urbain', ['elecok','elec'],
+      "À la réception, le tableau du SSI est sans dérangement ; le veilleur de nuit sait l'exploiter et appeler le 18.", "SSI de catégorie A surveillé, liaison téléphonique avec les sapeurs-pompiers (O 19, O 20) : conforme.",
+      "Le tableau du SSI affiche un défaut depuis deux semaines ; le veilleur de nuit ne sait pas ce qu'il signifie.", "Tous les hôtels ont un SSI de catégorie A (O 19 § 1). Un défaut non traité peut neutraliser une zone de détection.",
+      "Le défaut masquait la zone du 2e étage : aucune alarme ne s'est déclenchée.", "Le SSI surveillé donne l'alarme et le veilleur alerte les secours."),
+    e:PT_('Extincteur à eau pulvérisée', 'Art. O 17 § 1 : 6 litres, 1 pour 200 m², 15 m au plus', ['ext','extempty'],
+      "Extincteur de 6 litres accroché dans la circulation, vérifié dans l'année, à moins de 15 m de chaque chambre.", "Répartition conforme à O 17 § 1.",
+      "Le support d'extincteur de l'étage est vide : l'appareil a été descendu à la cuisine.", "Il faut au moins un extincteur à eau pulvérisée de 6 litres pour 200 m², à 15 m au plus de tout point (O 17 § 1).",
+      "Le personnel ne trouve aucun extincteur à l'étage.", "L'extincteur à portée permet d'éteindre un début de feu dans une chambre."),
+  } },
+  N:{ furn:'t', counter:true, order:['p','G','U','F','r','e','A','b','B','C'], lib:{
+    G:PT_('Hotte et filtres de la cuisine', 'Art. GC 21 § 2 : filtres nettoyés ou remplacés au moins une fois par semaine', ['hood','hoodgrease'],
+      "Hotte propre, filtres nettoyés cette semaine, cahier d'entretien à jour.", "Filtres nettoyés au moins une fois par semaine, conduits ramonés chaque année (GC 21) : conforme.",
+      "Les filtres de la hotte sont noirs de graisse, des coulures descendent sur la façade.", "Les graisses accumulées s'enflamment facilement et propagent le feu dans le conduit. Les filtres se nettoient au moins une fois par semaine (GC 21 § 2).",
+      "Une flamme de la friteuse atteint la hotte grasse : le feu file dans le conduit.", "Sur une hotte propre, la flamme de la friteuse ne trouve rien à brûler."),
+    U:PT_('Arrêt d\'urgence de la cuisine', 'Art. GC 4 : dispositif d\'arrêt d\'urgence de l\'énergie, près de l\'accès ou du bloc cuisson', ['aru','aruhidden'],
+      "Le coup-de-poing d'arrêt d'urgence est visible, près de la porte de la cuisine, et le chef sait ce qu'il coupe.", "Arrêt d'urgence par énergie, accessible près de l'accès (GC 4) : conforme.",
+      "Le coup-de-poing d'arrêt d'urgence est caché derrière des cartons de livraison.", "La cuisine doit avoir un arrêt d'urgence de l'alimentation en énergie, placé près de l'accès ou du bloc cuisson (GC 4). Inaccessible, il ne sert à rien.",
+      "Personne n'arrive à couper le gaz : les flammes reprennent sans cesse.", "Le cuisinier coupe l'énergie d'un geste : le feu faiblit aussitôt."),
+    F:PT_('Porte entre cuisine et salle', 'Art. GC 9 : grande cuisine isolée = local à risques moyens ; va-et-vient E 30 admis', ['cfclosed','cfdoor'],
+      "Porte va-et-vient pare-flammes entre la cuisine et la salle, elle revient seule en position fermée.", "Isolement de la grande cuisine (plus de 20 kW) maintenu (GC 9) : conforme.",
+      "La porte va-et-vient est bloquée ouverte par une cale pour faciliter le service.", "Une grande cuisine isolée est un local à risques moyens (GC 9). Bloquée ouverte, la porte laisse passer fumées et flammes vers la salle.",
+      "La fumée de la cuisine envahit la salle pleine de clients.", "La porte fermée garde la fumée en cuisine le temps d'évacuer la salle."),
+    r:PT_('Bouteille de gaz en salle', 'Art. GC 20 : butane de 13 kg au plus en salle, un seul appareil, hors d\'atteinte du public', ['boilerclosed','boileropen'],
+      "Le réchaud du buffet utilise une petite cartouche ; aucune bouteille en salle.", "Pas de stockage de gaz dans la salle (GC 20, GZ) : conforme.",
+      "Deux bouteilles de propane de 35 kg alimentent la plancha du buffet, au milieu de la salle.", "En salle, seule une bouteille de butane de 13 kg au plus, pour un seul appareil et hors d'atteinte du public, est admise (GC 20).",
+      "Une fuite sur le flexible de la plancha s'enflamme au milieu des clients.", "Sans bouteille en salle, le risque d'explosion est écarté."),
+  } },
+  R:{ furn:'t', order:['p','x','l','F','A','e','b','d','B','C'], lib:{
+    x:PT_('Exercices d\'évacuation', 'Art. R 33 : premier exercice dans le mois de la rentrée, temps d\'évacuation noté au registre', ['desk','deskempty'],
+      "Au registre : exercice du 18 septembre, évacuation en 2 min 40, un exercice par trimestre.", "Premier exercice dans le mois de la rentrée, déroulement et durée consignés (R 33) : conforme.",
+      "Aucun exercice depuis la rentrée, il y a quatre mois. « On le fera avant l'été. »", "Le premier exercice a lieu dans le mois qui suit la rentrée ; son déroulement et le temps d'évacuation sont notés au registre (R 33).",
+      "Les élèves ne connaissent pas le point de rassemblement : la sortie se fait dans le désordre.", "Entraînés, les élèves évacuent en ordre et en moins de trois minutes."),
+    l:PT_('Salle de sciences', 'Art. R 12 : produits dangereux limités aux manipulations en cours', ['lab','labfull'],
+      "Dans la salle de sciences, seuls les flacons de la séance du jour sont sur la paillasse ; le reste est en armoire ventilée.", "Quantités limitées aux manipulations en cours (R 12 § 1) : conforme.",
+      "Des dizaines de flacons d'alcool et de solvants s'entassent sur les étagères de la salle de travaux pratiques.", "Les produits toxiques et liquides inflammables présents en salle sont limités aux manipulations en cours (R 12 § 1).",
+      "Un bec électrique enflamme les vapeurs de solvant : les flacons alentour s'embrasent.", "Sans stock en salle, un incident de manipulation reste minime."),
+    F:PT_('Porte de l\'escalier protégé', 'Art. R 15 § 2 : portes des escaliers protégés à fermeture automatique (alarme type 1 ou 2)', ['cfclosed','cfdoor'],
+      "La porte de l'escalier est retenue par une ventouse et se ferme au déclenchement de l'alarme.", "Porte à fermeture automatique conforme (R 15 § 2, CO 47) : conforme.",
+      "La porte de l'escalier est calée par une chaise pour faciliter les intercours.", "Les accès aux escaliers protégés ont des portes à fermeture automatique (R 15 § 2). Calée, la porte laisse la fumée envahir l'escalier.",
+      "L'escalier se remplit de fumée : deux classes sont bloquées à l'étage.", "L'escalier reste sain : toutes les classes descendent sans encombre."),
+  } },
+  J:{ furn:'j', order:['p','F','A','L','H','Q','x','e','C','b','B'], lib:{
+    F:PT_('Porte de recoupement entre zones', 'Art. J 10 et J 19 : niveaux recoupés, portes à fermeture automatique sur détection', ['cfclosed','cfdoor'],
+      "Au test de la détection, la porte de recoupement se libère de sa ventouse et se ferme.", "Recoupement et fermeture automatique dans la zone sinistrée (J 10, J 19) : conforme.",
+      "La porte de recoupement est calée par un fauteuil roulant garé devant.", "Chaque niveau est recoupé au moins une fois ; les portes se ferment sur détection (J 10, J 19) pour permettre le transfert horizontal des résidents.",
+      "La fumée gagne les deux zones : impossible de transférer les résidents.", "La zone voisine reste saine pour accueillir les résidents."),
+    A:PT_('Détection et indicateur d\'action', 'Art. J 36 § 1 : détection partout sauf escaliers et sanitaires, indicateur d\'action en circulation', ['alarm','alarmhidden'],
+      "Détecteur dans la chambre, indicateur d'action allumé au-dessus de la porte, côté couloir.", "Détection généralisée avec report en circulation (J 36) : conforme.",
+      "L'indicateur d'action au-dessus des chambres a été démonté lors des travaux de peinture.", "Les détecteurs des chambres ont un indicateur d'action visible dans la circulation (J 36 § 1) : la nuit, le personnel repère tout de suite la chambre en feu.",
+      "L'aide-soignante cherche la chambre en feu porte par porte.", "Le voyant du couloir mène droit à la bonne chambre."),
+    L:PT_('Clés des chambres', 'Art. J 21 § 2 : chambres fermées à clé si chaque surveillant a un passe, et des passes pour les secours', ['classdoor','lockdoor'],
+      "Chaque membre de l'équipe de nuit porte le passe général ; deux passes sont dans la boîte des sapeurs-pompiers.", "Passes du personnel et des secours en place (J 21 § 2) : conforme.",
+      "La nuit, un seul passe pour toute l'équipe, rangé dans le bureau infirmier fermé.", "La fermeture à clé des chambres n'est admise que si chaque surveillant a une clé qui les ouvre toutes, et que des clés sont tenues pour les secours (J 21 § 2).",
+      "Il faut plusieurs minutes pour trouver la clé et ouvrir la chambre enfumée.", "Le soignant ouvre immédiatement avec son passe."),
+    H:PT_('Stockage d\'oxygène', 'Art. J 16 : oxygène > 200 l en eau = risques importants ; lingerie et réserves = risques moyens', ['boilerclosed','boileropen'],
+      "Les bouteilles d'oxygène sont arrimées dans leur local fermé et ventilé.", "Local à risques isolé et tenu (J 16, CO 28) : conforme.",
+      "Des bouteilles d'oxygène traînent dans la lingerie, au milieu des sacs de linge.", "Le stockage d'oxygène est un local à risques (J 16). Près du linge, ce comburant fait d'un départ de feu un brasier.",
+      "Le feu de la lingerie, attisé par l'oxygène, devient violent en quelques secondes.", "Rangé à part, l'oxygène ne peut pas aggraver un départ de feu."),
+    Q:PT_('Tableau répétiteur', 'Art. J 37 § 4 : tableau répétiteur d\'alarme à chaque niveau', ['elecok','elec'],
+      "Au poste de soins de l'étage, le tableau répétiteur affiche les zones de détection.", "Tableau répétiteur à chaque niveau (J 37 § 4) : conforme.",
+      "Le tableau répétiteur de l'étage est éteint, son disjoncteur coupé depuis une panne.", "Chaque niveau a un tableau répétiteur, pour que le personnel sache quelle zone est en feu (J 37 § 4).",
+      "L'équipe de nuit ne sait pas d'où vient l'alarme.", "Le tableau indique la zone : l'équipe intervient sans délai."),
+    x:PT_('Exercices du personnel', 'Art. J 39 § 2 : exercices pratiques au moins une fois par semestre', ['desk','deskempty'],
+      "Le registre mentionne un exercice de transfert horizontal en mars et en octobre.", "Exercices semestriels tracés (J 39) : conforme.",
+      "Dernier exercice noté au registre : il y a deux ans.", "Des exercices pratiques ont lieu au moins une fois par semestre (J 39 § 2) : de nuit, le personnel est peu nombreux et doit connaître chaque geste.",
+      "L'équipe de nuit hésite sur la zone de transfert.", "L'équipe transfère les résidents en bon ordre."),
+    e:PT_('Extincteurs par niveau', 'Art. J 34 : 6 litres, 1 pour 200 m² et par niveau, 15 m au plus', ['ext','extempty'],
+      "Un extincteur à eau pulvérisée de 6 litres à chaque niveau, vérifié dans l'année.", "Répartition conforme à J 34.", "Pas d'extincteur au 1er étage : il a été descendu à la cuisine.",
+      "Il faut au moins un extincteur pour 200 m² et par niveau, à 15 m au plus de tout point (J 34).", "Aucun extincteur à l'étage : le départ de feu grandit.", "L'extincteur de l'étage éteint le départ de feu."),
+  } },
+  L:{ furn:'y', order:['p','R','c','Z','b','A','e','B','C'], lib:{
+    R:PT_('Rangées de sièges', 'Art. L 28 : 50 sièges au plus entre deux circulations, 8 si une seule', ['seats','seatsblock'],
+      "Rangées fixées au sol, 16 sièges entre deux allées, allées dégagées.", "Rangées conformes (L 28) : conforme.",
+      "Des chaises pliantes ont été ajoutées dans l'allée latérale pour un spectacle complet.", "Les rangées comptent au plus 50 sièges entre deux circulations (8 si une seule) et les allées restent libres (L 28, L 20).",
+      "À l'évacuation, le public s'entasse dans l'allée encombrée de chaises.", "Les allées dégagées vident la salle en quelques minutes."),
+    c:PT_('Vestiaire', 'Art. L 25 : vestiaires hors des circulations, interdits dans les escaliers', ['exitzone','pallets'],
+      "Le vestiaire est installé dans un local à part, hors du hall de sortie.", "Vestiaire hors des cheminements (L 25) : conforme.",
+      "Les portants à manteaux sont alignés dans l'escalier qui mène au balcon.", "Les vestiaires sont aménagés hors des chemins de circulation et interdits dans les escaliers et à leurs abords (L 25).",
+      "Les portants renversés bloquent l'escalier du balcon.", "L'escalier dégagé permet au balcon d'évacuer."),
+    Z:PT_('Scène et cintres', 'Art. L 57 : dépoussiérage annuel des cintres et dessous, interdiction de fumer sur scène', ['stage','stagedust'],
+      "Dépoussiérage des cintres fait en août, noté au registre ; « Interdit de fumer » affiché en coulisses.", "Entretien annuel de la cage de scène (L 57) : conforme.",
+      "Poussière épaisse dans les cintres, mégots écrasés derrière le rideau de fond.", "Les cintres, grils et dessous de scène sont dépoussiérés chaque année ; il est interdit de fumer sur scène (L 57).",
+      "Un projecteur surchauffé enflamme la poussière des cintres.", "Sans poussière dans les cintres, la chaleur des projecteurs n'allume rien."),
+    b:PT_('Éclairage de sécurité de la salle', 'Art. L 33 et EC 8 : éclairage de sécurité du bloc-salle', ['baes','baesposter'],
+      "Pendant la projection, les blocs restent allumés et lisibles au-dessus de chaque sortie.", "Éclairage de sécurité du bloc-salle conforme (L 33) : conforme.",
+      "Un panneau décoratif de l'exposition masque le bloc de la sortie latérale.", "Le bloc-salle a un éclairage de sécurité (L 33) et le balisage doit rester visible de tout point (CO 42).",
+      "Dans le noir et la fumée, le public ne voit pas la sortie latérale.", "Le balisage visible guide le public vers les sorties."),
+  } },
+  M:{ furn:'S', counter:true, order:['p','M','s','r','d','e','A','b','B','Q'], lib:{
+    M:PT_('Stockage des chariots', 'Art. M 10 § 3 : chariots rangés sur des emplacements matérialisés, hors dégagements', ['carts','cartsblock'],
+      "Les chariots sont alignés dans leur zone peinte, à côté de l'entrée.", "Stockage matérialisé, hors dégagements (M 10 § 3) : conforme.",
+      "Une trentaine de chariots encombrent le sas de la sortie de secours.", "Les chariots se rangent sur des emplacements réservés et matérialisés, sans réduire la largeur des dégagements (M 10 § 3).",
+      "Les clients se heurtent aux chariots devant la sortie de secours.", "La sortie dégagée laisse passer la foule sans bousculade."),
+    s:PT_('Signalisation des sorties', 'Art. M 14 : décoration et publicité ne masquent jamais les panneaux de sortie', ['baes','baesposter'],
+      "Les panneaux « Sortie » restent visibles au-dessus des rayons.", "Signalisation dégagée (M 14) : conforme.",
+      "Une banderole « Promo de la semaine » est suspendue devant le panneau de sortie de secours.", "Les panneaux de décoration et de publicité ne doivent jamais diminuer la visibilité des panneaux de sortie (M 14).",
+      "Les clients ne voient pas la sortie de secours et repartent vers l'entrée principale.", "Les clients repèrent tout de suite la sortie la plus proche."),
+    r:PT_('Réserve d\'approche', 'Art. M 16 : réserve d\'approche signalée « Sans issue, interdit au public », volume limité', ['cfclosed','cfdoor'],
+      "Réserve d'approche fermée, panneau « Sans issue, interdit au public » en place.", "Réserve d'approche signalée et limitée (M 16) : conforme.",
+      "La réserve d'approche déborde dans le rayon, son panneau « Sans issue » a disparu.", "L'accès aux réserves d'approche est interdit au public par la mention « Sans issue, interdit au public » ; leur volume est limité (M 16).",
+      "Des clients prennent la réserve pour une sortie et s'y retrouvent coincés.", "Le panneau « Sans issue » oriente le public vers les vraies sorties."),
+    d:PT_('Agencement et mobilier', 'Art. M 15 : agencement principal et mobilier en matériaux M3 au moins', ['drawfew','drawmany'],
+      "Gondoles métalliques, présentoirs justifiés M3 par leurs procès-verbaux.", "Agencement en M3 (M 15) : conforme.",
+      "Des présentoirs en carton léger et des guirlandes en papier couvrent tout un rayon.", "L'agencement principal et le mobilier sont en matériaux de catégorie M3 au moins (M 15).",
+      "Les présentoirs en carton s'embrasent et propagent le feu dans le rayon.", "Le mobilier peu inflammable limite la propagation."),
+  } },
+};
+for (const k of ['O','N','R','J','L','M']) FURN[k] = TYPE_LIBS[k].furn || FURN[k];
+
+/* ---- Étages : les grands établissements ont un 1er étage, relié par l'escalier ---- */
+function siteRoom(type, keys, withExit){
+  const W = 18, H = 11; const t = Array.from({length:H}, (_, y) => Array.from({length:W}, (_, x) => (y === 0 || y === H-1 || x === 0 || x === W-1) ? '#' : '.'));
+  if (withExit) t[H-1][8] = t[H-1][9] = 'D';
+  const f = FURN[type] || 't';
+  for (const y of [3, 5, 7]) for (let x = 2; x < W-2; x++) if (x % 5 !== 1 && !(y === 7 && x > 10)) t[y][x] = f;
+  if (TYPE_LIBS[type]?.counter || type === 'GA') for (let x = 12; x < 16; x++) t[7][x] = type === 'N' ? 'w' : 'K';
+  if (type === 'L') for (let x = 4; x < 14; x++) t[1][x] = x === 8 || x === 9 ? '.' : 'z';
+  const wallSpots = [2, 4, 6, 10, 12, 14]; let wi = 0;
+  for (const k of keys){
+    if (k === 'p'){ t[0][16] = 'X'; t[1][16] = 'p'; continue; }
+    if (k === 'B'){ t[8][3] = 'B'; continue; }
+    if (k === 'L' || k === 'F' || k === 'H'){ const y = k === 'L' ? 3 : k === 'F' ? 5 : 7; t[y][0] = k; t[y][1] = '.'; continue; }
+    if (k === 'R' || k === 'M' || k === 'Z'){ const pos = { R:[6,6], M:[13,8], Z:[8,1] }[k]; t[pos[1]][pos[0]] = k; continue; }
+    const x = wallSpots[wi++ % wallSpots.length]; t[0][x] = k; t[1][x] = '.'; if (type === 'L' && t[1][x] === 'z') t[1][x] = '.';
+  }
+  return t;
+}
+const FLOOR_GAP = 10;
+TILE_DRAW.void = function(c){ TD_(c,'#161a24',0,0,16,16); };
+function siteRows2(type, keys, floors){
+  if (floors < 2) return siteRoom(type, keys, true).map(r => r.join(''));
+  const half = Math.ceil(keys.length / 2); const k1 = keys.filter(k => k === 'p' || k === 'B').concat(keys.filter(k => k !== 'p' && k !== 'B')).slice(0, half);
+  const k2 = keys.filter(k => !k1.includes(k));
+  const a = siteRoom(type, k1, true), b = siteRoom(type, k2, false);
+  a[9][2] = 'E'; b[9][2] = 'E';
+  return a.map((r, y) => r.join('') + 'V'.repeat(FLOOR_GAP) + b[y].join(''));
+}
+function siteStairs(sc){
+  const M = sc.M; const here = sc.px; let tgt = null;
+  M.t.forEach((r, y) => r.forEach((c, x) => { if (c === 'E' && Math.abs(x - here) > 4) tgt = [x, y]; }));
+  if (!tgt) return; sc.place(tgt[0], tgt[1] - 1, 'up');
+  toast(tgt[0] >= 18 + FLOOR_GAP ? '1er étage' : 'Rez-de-chaussée', SITES[sc.mapId]?.short || '');
+}
 
 const IN_TILE_BASE = { '#':'wall', '.':'floor', 'c':'boxes', 'X':'exitdoor', 'S':'shelf', 'R':'fridge', 'K':'counter', 'g':'ext', 'D':'mat' };
 const IN_BLOCK = new Set('#cFXpSRKBQegbn');
@@ -5868,7 +6058,7 @@ function interiorMap(id){
   const t = I.rows.map(r => r.split('')); const H = t.length, W = t[0].length;
   const blockSet = new Set(I.block); const block = t.map(r => r.map(c => blockSet.has(c)));
   const doors = {}, spots = {};
-  t.forEach((r,y) => r.forEach((c,x) => { if (c === 'D') doors[x+','+y] = 'exitInterior'; if (pts[c]) spots[x+','+y] = c; }));
+  t.forEach((r,y) => r.forEach((c,x) => { if (c === 'D') doors[x+','+y] = 'exitInterior'; if (c === 'E') doors[x+','+y] = 'stairs'; if (pts[c]) spots[x+','+y] = c; }));
   I.tweak(st, block, spots);
   const dyn = I.dyn(st);
   const keyAt = (x,y) => { const c = t[y][x]; return 't_' + (dyn[c] || I.base[c] || 'floor'); };
@@ -6015,6 +6205,7 @@ async function doorAction(id){
   const sc = scene; const back = () => sc.place(sc.px, sc.py+1, 'down');
   if (id === 'store') return enterSite('store');
   if (id === 'ecolejf') return enterSite('school');
+  if (id === 'stairs'){ siteStairs(sc); return; }
   if (id === 'exitInterior'){ const e = siteExit(sc.mapId); sc.loadMap(e.map, e.x, e.y, e.f); return; }
   if (id === 'caserne'){ back(); const c = await choose("Centre de secours. Que veux-tu faire ?", ['Carnet de révision','Missions RCCI','Consulter le Réglementodex','Passer au vestiaire','Entraînement libre','Ressortir'], 'Plateau technique');
     if (c === 0) carnet(); else if (c === 1) rcciMenu(); else if (c === 2) dex(); else if (c === 3) wardrobe(); else if (c === 4) trainingPanel(); return; }
