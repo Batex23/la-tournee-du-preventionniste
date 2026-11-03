@@ -415,7 +415,7 @@ code{font-family:var(--f-disp);background:#e8edf3;color:var(--ink);padding:0 4px
       <div><b id="mQ">0</b>questions</div>
       <div><b id="mT">0</b>thèmes</div>
       <div><b id="mP">–</b>joueurs classés</div>
-      <div><b>v0.23</b>version test</div>
+      <div><b>v0.24</b>version test</div>
     </div>
   </div>
 </div>
@@ -910,6 +910,7 @@ function askQuestion(q, secs, hooks){
     if ((S.items.renfort||0) > 0 && hooks?.renfort) jk.push(`<button type="button" class="btn alt sm" data-jk="renfort">Renfort · ${S.items.renfort}</button>`);
     if ((S.items.temps||0) > 0 && secs) jk.push(`<button type="button" class="btn alt sm" data-jk="temps">Sursis · ${S.items.temps}</button>`);
     if (jk.length) $('#fbz').insertAdjacentHTML('beforebegin', `<div class="jokers"><span class="ref">Jokers :</span>${jk.join('')}</div>`);
+    else if (badgeCount() >= 1) $('#fbz').insertAdjacentHTML('beforebegin', `<div class="jokers"><span class="ref">🪙 Pas de joker : 50/50, Renfort et Sursis sont à la Boutique du menu, dès 8 crédits.</span></div>`);
     box.querySelectorAll('[data-jk]').forEach(b => b.onclick = () => { if (done) return; const k = b.dataset.jk;
       if (k === 'f50'){ const wrong = [...box.querySelectorAll('.opt')].filter(x => !q.c.includes(+x.dataset.oi) && !x.disabled); shuffle(wrong).slice(0, Math.ceil(wrong.length/2)).forEach(x => { x.disabled = true; x.style.opacity = .35; }); }
       if (k === 'renfort' && !hooks.renfort()){ toast('Crédibilité déjà au maximum'); return; }
@@ -1154,7 +1155,7 @@ function menuOld(){
 
 /* ================= HUD ================= */
 function refreshHud(){
-  tutoAdvance(); dailyCheck(); colCheck(); medalCheck(); netSync(); setTimeout(creditWatch, 0); if (S.classe && cloud.db){ if (!CL.unsubG) classListen(); classBeat(); }
+  tutoAdvance(); dailyCheck(); colCheck(); medalCheck(); netSync(); setTimeout(creditWatch, 0); dexButton(); if (S.classe && cloud.db){ if (!CL.unsubG) classListen(); classBeat(); }
   $('#hname').textContent = S.name || 'Préventionniste';
   const lv = levelOf(S.xp); $('#hlvl').textContent = 'Niv. ' + lv.L; $('#hgrade').textContent = gradeOf(lv.L) + (S.titre ? ` · « ${S.titre} »` : ''); $('#hxp').style.width = (lv.into/lv.need*100) + '%';
   const mid = scene?.mapId || 'town'; const inSite = SITES[mid]; let o;
@@ -1556,16 +1557,16 @@ async function engage(inc){
     intro:`${d.desc} Réponds juste pour éteindre le feu.`, taunts:['Les flammes gagnent du terrain !','La fumée s\'épaissit…','Le feu reprend de plus belle !'],
     win:quick ? 'Feu éteint, et vite ! Bonus de rapidité de 50 %.' : 'Feu éteint. Belle intervention !', lose:"Le feu s'est propagé : les renforts prennent le relais. Reviens tenter ta chance." });
   if (res.win){ S.incidents = S.incidents || {}; S.incidents[inc.key] = Date.now(); S.interventions = (S.interventions || 0) + 1; if (S.dispatch?.key === inc.key) S.dispatch = null; save();
-    if (tuto && S.tuto === 1){ S.tuto = 2; save(); await say(["Bravo, premier feu éteint !","Les routes entre les villes sont pleines de feux comme celui-ci : le CTA t'y engagera. Une fois éteints, ils deviennent des scènes d'expertise.","Étape suivante : M. Bertin, l'exploitant devant le supermarché, veut te défier. Va lui parler."], 'Lt Roche'); }
+    if (tuto && S.tuto === 1){ S.tuto = 2; save(); await say(["Bravo, premier feu éteint !","Les routes entre les villes sont pleines de feux comme celui-ci : le CTA t'y engagera. Une fois éteints, ils deviennent des scènes d'expertise.","Étape suivante : le Cne Bertin, qui joue l'exploitant devant le supermarché, veut te défier. Va lui parler."], 'Lt Roche'); }
   }
   refreshHud();
 }
 
 /* ---- Tutoriel de l'ENSOSP ---- */
 const TUTO = [
-  "Parle au <b>Lt Roche</b>, devant le plateau technique de l'ENSOSP.",
+  "Ramasse le <b>livre bleu</b> tombé près de toi, puis parle au <b>Lt Roche</b>, devant le plateau technique de l'ENSOSP.",
   "Éteins le <b>feu de poubelles</b> : rejoins la balise bleue et appuie sur A ou Espace.",
-  "Défie <b>M. Bertin</b>, l'exploitant devant le supermarché, au sud du campus (quartier des Milles).",
+  "Défie le <b>Cne Bertin</b>, qui joue l'exploitant devant le supermarché, au sud du campus (quartier des Milles).",
   "Fais ta <b>première commission</b> au supermarché L'Épi d'Or.",
   "Passe l'examen du <b>Cdt Moreau</b>, à la salle d'examen.",
 ];
@@ -4960,7 +4961,7 @@ async function rivalBack(){ const b = scene.prev; if (b && scene.walkable(b.x, b
 
 /* ---- Branchements ---- */
 function npcTex(id, fresh){ for (const d of ['down','up','side']){ const k = `c_${id}_${d}`; if (fresh || !TEX[k]) mkTex(k, 16, 16, c => drawPixels(c, SPR[d], PAL[id])); } }
-function extraNpcs(sc){ try { const n0 = sc.npcs.length; placeQuests(sc); if (sc.M.route) placeRival(sc); if (typeof megafeuNpcs === 'function') megafeuNpcs(sc); if (typeof confBossNpcs === 'function') confBossNpcs(sc); for (const n of sc.npcs.slice(n0)) npcTex(n.id, n.id.startsWith('cfx_')); } catch(e){ console.warn('extraNpcs', e); } }
+function extraNpcs(sc){ try { const n0 = sc.npcs.length; placeQuests(sc); if (sc.M.route) placeRival(sc); if (typeof megafeuNpcs === 'function') megafeuNpcs(sc); if (typeof confBossNpcs === 'function') confBossNpcs(sc); if (typeof ssiapNpcs === 'function') ssiapNpcs(sc); for (const n of sc.npcs.slice(n0)) npcTex(n.id, n.id.startsWith('cfx_')); } catch(e){ console.warn('extraNpcs', e); } }
 function questMarks(ctx, ox, oy, z){
   if (!scene?.M) return; const e = ZONES[scene.mapId]; const t = performance.now();
   const bub = (X, Y, txt, col) => { ctx.fillStyle = col; ctx.strokeStyle = '#14203a'; ctx.lineWidth = Math.max(1, z); ctx.beginPath(); ctx.arc(X, Y, 6*z, 0, Math.PI*2); ctx.fill(); ctx.stroke();
@@ -4968,6 +4969,7 @@ function questMarks(ctx, ox, oy, z){
   for (const n of scene.npcs){
     if (n.id.startsWith('q_')){ const d = questDefs()[n.id]; const q = QS(n.id); if (!d || q?.st === 'done') continue;
       if (!q || questReady(d)) bub(ox + (n.x*16 + 8)*z, oy + (n.y*16 - 10 + Math.sin(t/300)*1.5)*z, q ? '✓' : '!', '#f5c518'); }
+    else if (n.id.startsWith('ssiap_')) bub(ox + (n.x*16 + 8)*z, oy + (n.y*16 - 10)*z, '🪙', '#f5c518');
     else if (n.id === 'prefete33' && S.megafeu?.st !== 'done') bub(ox + (n.x*16 + 8)*z, oy + (n.y*16 - 10 + Math.sin(t/300)*1.5)*z, megafeuOn() && !megafeuLeft() ? '✓' : '!', '#f5c518');
     else if (n.id.startsWith('cfx_')) bub(ox + (n.x*16 + 8)*z, oy + (n.y*16 - 10)*z, 'C', '#c9ced8');
   }
@@ -5028,7 +5030,7 @@ async function megafeuTalk(){
 MEDALS.push(['megafeu', 'Mégafeu de Gironde', 'Traiter les reprises du mégafeu de juillet 2026, route des Vignobles', 'o', s => s.megafeu?.st === 'done']);
 
 /* ================= v19 : RETOURS DES TESTEURS · EFFETS ET SENSATIONS ================= */
-const GAME_VER = 'v0.23';
+const GAME_VER = 'v0.24';
 const reduceMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
 const buzz = p => { try { if (S?.vibe !== false && navigator.vibrate) navigator.vibrate(p); } catch(e){} };
 
@@ -5191,21 +5193,23 @@ const TITRES = [
 function livree(){ return LIVREES.find(l => l.id === S?.livree) || LIVREES[0]; }
 function refreshTruckTex(){ if (!TEX.t_grass) return; for (const d of ['down','up','side']) mkTex('veh_vtu_'+d, 16, 16, c => drawTruck(c, d)); }
 function boutique(tab){
-  S.owned = S.owned || {}; tab = tab || 'tenues';
+  S.owned = S.owned || {}; tab = tab || 'jokers';
   const cr = S.credits || 0;
   const card = (title, sub, owned, price, eq, act) => `<div class="shopit ${eq ? 'eq' : ''}"><b>${esc(title)}</b><span>${sub}</span>${eq ? '<em>Équipé</em>' : owned ? `<button class="btn sm" type="button" data-act="${act}">Équiper</button>` : price === null ? '<em class="lock">Verrouillé</em>' : `<button class="btn ${cr >= price ? 'warn' : 'alt'} sm" type="button" data-act="${act}" ${cr >= price ? '' : 'disabled'}>Acheter · ${price} cr.</button>`}</div>`;
   let body = '';
   if (tab === 'tenues') body = SHOP_OUTFITS.map(o => card(o.name, `<span class="sw" style="background:${o.C}"></span><span class="sw" style="background:${o.Y}"></span><span class="sw" style="background:${o.P}"></span>`, !!S.owned[o.id], o.price, S.avatar?.outfit === o.id, 'o:' + o.id)).join('');
   if (tab === 'livrees') body = LIVREES.map(l => card(l.name, `<span class="sw" style="background:${l.R}"></span><span class="sw" style="background:${l.Y}"></span><span class="sw" style="background:${l.L}"></span>`, !l.price || !!S.owned['l_' + l.id], l.price, livree().id === l.id, 'l:' + l.id)).join('') + `<p class="ref">La livrée s'applique au Mini-VTU (débloqué au niveau 8).</p>`;
+  if (tab === 'jokers'){ S.items = S.items || {}; body = SHOP.map(it => `<div class="shopit"><b>${esc(it.name)}</b><span>${esc(it.desc)}</span><span class="ref">En stock : ${S.items[it.id] || 0}</span><button class="btn ${cr >= it.price ? 'warn' : 'alt'} sm" type="button" data-act="j:${it.id}" ${cr >= it.price ? '' : 'disabled'}>Acheter · ${it.price} cr.</button></div>`).join('') + '<p class="ref">Les jokers apparaissent sous la question pendant les combats et les examens.</p>'; }
   if (tab === 'titres') body = TITRES.map(t => { const can = t.need ? t.need(S) : true; return card(`« ${t.name} »`, t.how ? esc(t.how) : 'Titre affiché sous ton nom', t.need ? can : !!S.owned['t_' + t.id], t.need ? (can ? 0 : null) : t.price, S.titre === t.name, 't:' + t.id); }).join('') + (S.titre ? '<button class="btn alt sm" type="button" data-act="t:none">Retirer le titre</button>' : '');
   const P = panel(`<button type="button" class="btn alt close" id="boX">Fermer</button><div class="eyebrow">Caserne · vestiaire</div><h2>Boutique</h2>
     <p class="lede">Tu as <b>${cr} crédits</b>. On en gagne avec les commissions, les quêtes, les médailles, les duels contre le Cabinet Conformis et le centre SSIAP.</p>
-    <nav class="tdtabs" role="tablist">${[['tenues','Tenues'],['livrees','Livrées du VTU'],['titres','Titres']].map(([k, l]) => `<button type="button" role="tab" data-tab="${k}" aria-selected="${tab === k}">${l}</button>`).join('')}</nav>
+    <nav class="tdtabs" role="tablist">${[['jokers','Jokers'],['tenues','Tenues'],['livrees','Livrées du VTU'],['titres','Titres']].map(([k, l]) => `<button type="button" role="tab" data-tab="${k}" aria-selected="${tab === k}">${l}</button>`).join('')}</nav>
     <div class="shopgrid">${body}</div><div class="row" style="margin-top:12px"><button class="btn alt" type="button" id="boW">Changer d'apparence</button></div>`);
   $('#boX').onclick = closePanel; $('#boW').onclick = () => wardrobe();
   P.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => boutique(b.dataset.tab));
   P.querySelectorAll('[data-act]').forEach(b => b.onclick = () => {
     const [k, id] = b.dataset.act.split(':');
+    if (k === 'j'){ const it = SHOP.find(x => x.id === id); if (!pay(it.price)) return; S.items[id] = (S.items[id] || 0) + 1; toast('Joker acheté', it.name); }
     if (k === 'o'){ const o = SHOP_OUTFITS.find(x => x.id === id); if (!S.owned[id]){ if (!pay(o.price)) return; S.owned[id] = Date.now(); toast('Tenue achetée', o.name); }
       S.avatar = { ...S.avatar, outfit:id }; refreshPlayerTex(); syncPlayer(); }
     if (k === 'l'){ const l = LIVREES.find(x => x.id === id); if (l.price && !S.owned['l_' + id]){ if (!pay(l.price)) return; S.owned['l_' + id] = Date.now(); toast('Livrée achetée', l.name); }
@@ -5680,6 +5684,108 @@ function progressObjective(nextE){
   return `Habilitation : niveau <b>${req}</b> requis pour ${esc(SITES[k].short)} (${esc(nextE.name)}). Il te manque ${xpToLevel(req)} XP : combats, feux, duels.`;
 }
 
+/* ================= v24 : L'ENSOSP TUTORIELLE · LIVRES BLEUS · ANTENNES SSIAP · JOKERS VISIBLES ================= */
+/* ---- Tout le monde en chemisette bleue : élèves officiers (lieutenants et capitaines) en mise en situation ---- */
+const ENSOSP_CAST = {
+  bertin:['Cne Bertin', 'Élève officier · joue l\'exploitant pressé'], lacroix:['Ltn Lacroix', 'Élève officier · joue l\'électricienne'],
+  vasseur:['Cne Vasseur', 'Élève officier · joue l\'architecte'], petit:['Ltn Petit', 'Élève officier · joue l\'installateur SSI'],
+  gardien:['Cne Ferreira', 'Élève officier · joue le gardien'], riverain:['Ltn Marchand', 'Élève officier'],
+  garnier:['Cne Garnier', 'Élève officier · joue la directrice du supermarché'], benali:['Cne Benali', 'Élève officier · joue la directrice des études'],
+  moreau:['Cdt Moreau', 'Chef du groupement prévention · salle d\'examen'],
+};
+const ENSOSP_HAIR = ['#2a2a2a','#6b4423','#d9a441','#3e3e44','#8b3a1a','#9a9a9a','#1f1a17','#6b4423'];
+Object.entries(ENSOSP_CAST).forEach(([id, [name, role]], i) => { if (!NPCS[id]) return; NPCS[id].name = name; NPCS[id].role = role;
+  if (PAL[id]) PAL[id] = CHEMISETTE(PAL[id].H || ENSOSP_HAIR[i % ENSOSP_HAIR.length], PAL[id].S || '#e8b48a'); });
+if (NPCS.bertin) NPCS.bertin.intro = "Mise en situation ! Je joue l'exploitant du supermarché école. Mes palettes, c'est temporaire… Je parie que tu ne connais pas les règles des dégagements.";
+/* l'« école » du campus devient les salles de cours de l'ENSOSP */
+if (SITES.store) SITES.store.greet = ["Mise en situation au supermarché école ! Je suis la Cne Garnier, je joue la directrice.", "Fais ton tour comme pour une vraie visite, et viens me voir pour le rapport."];
+if (SITES.school){ const fix = v => typeof v === 'string' ? v.replace(/l'école Jules-Ferry/g, "les salles de cours de l'ENSOSP").replace(/École Jules-Ferry/g, "Salles de cours de l'ENSOSP").replace(/Jules-Ferry/g, 'Salles de cours') : v;
+  for (const k of Object.keys(SITES.school)) SITES.school[k] = Array.isArray(SITES.school[k]) ? SITES.school[k].map(fix) : fix(SITES.school[k]);
+  SITES.school.name = "Salles de cours de l'ENSOSP"; SITES.school.short = 'Salles de cours'; SITES.school.greet = ["Bienvenue dans les salles de cours ! Je suis la Cne Benali, je joue la directrice des études.", "Les stagiaires sont en cours : fais ta visite discrètement."]; }
+
+/* ---- Les cadets expliquent le jeu ---- */
+const GUIDES = [
+  ['cad_0', 'Ltn Garcia', 'Comment on progresse ?', [
+    ["Comment je monte en niveau ?", ["En combattant : les élèves officiers du campus, les préventionnistes des villes et des routes, les feux, les duels entre collègues.", "Chaque niveau élargit ton habilitation : c'est elle qui ouvre les commissions de sécurité."]],
+    ["À quoi servent les commissions ?", ["Chaque établissement demande un niveau minimum, affiché sur son enseigne (NIV).", "Les commissions rapportent des crédits, et le maître des badges de chaque ville exige d'en avoir fait avant son examen."]],
+    ["Et après le badge ?", ["Le badge ouvre la route vers la ville suivante. Quinze étapes jusqu'à Paris !", "Le menu 🧭 « Comment progresser » résume tout ça."]],
+  ]],
+  ['cad_1', 'Cne Leclerc', 'La commission de sécurité', [
+    ["Comment se passe une visite ?", ["Dans l'établissement, approche-toi des « ? » et examine chaque point : conforme ou non conforme.", "Quand tout est vu, rédige ton rapport auprès de l'exploitant."]],
+    ["Et si l'exploitant conteste ?", ["S'il y a des prescriptions, il te défie : réponds juste pour les défendre.", "Une prescription injustifiée te coûte des points : ne note que ce qui est vraiment non conforme."]],
+    ["Il y a des étages ?", ["Dans les grands établissements, oui : prends l'escalier pour finir la visite au 1er étage."]],
+  ]],
+  ['cad_2', 'Ltn Morel', 'Crédits, jokers et boutique', [
+    ["À quoi servent les crédits ?", ["Les crédits (🪙) se gagnent surtout en commission, mais aussi avec les quêtes, les médailles et le centre SSIAP.", "Ils achètent des jokers pour les combats et des tenues à la boutique."]],
+    ["C'est quoi, les jokers ?", ["50/50 : retire la moitié des mauvaises réponses. Renfort : rend un cœur. Sursis : arrête le chrono.", "Ils s'affichent sous la question pendant les combats, dès que tu en as."]],
+    ["Où les acheter ?", ["Au centre de formation SSIAP, ici sur le campus, dans la Boutique du menu, et dans les antennes SSIAP de Bordeaux et de Lyon."]],
+  ]],
+  ['cad_3', 'Cne Haddad', 'Les feux et la RCCI', [
+    ["Comment on éteint un feu ?", ["Sur les routes, des feux se déclarent : approche-toi et réponds juste pour l'éteindre.", "Le CTA t'engage parfois : arrive vite pour un bonus d'XP."]],
+    ["Et la RCCI ?", ["Un feu éteint devient une scène d'expertise : protège les traces, cherche le point d'origine, conclus sur la cause.", "Toujours avec la méthode de la NFPA 921 : hypothèse, puis test contre les faits."]],
+  ]],
+  ['cad_4', 'Ltn Roux', 'Jouer avec sa classe', [
+    ["Comment rejoindre ma classe ?", ["Scanne le QR code du formateur, ou entre son code dans Menu → Ma classe."]],
+    ["Et les duels ?", ["Approche-toi d'un collègue sur la carte et défie-le : mêmes questions, même chrono.", "Le gagnant prend 60 XP et 10 crédits, le perdant 15 XP de participation."]],
+    ["Le défi de la semaine ?", ["Dix questions, les mêmes pour tout le monde, nouveau chaque lundi. Le classement est commun."]],
+  ]],
+  ['cad_5', 'Cne Petitjean', 'Objets, quêtes et médailles', [
+    ["Les livres bleus ?", ["Des livres bleus de prévention sont cachés sur le campus. Le premier ouvre ton Réglementodex.", "Les suivants rapportent crédits et XP. Cherche bien, il y en a six !"]],
+    ["Les quêtes ?", ["Dans chaque ville, des habitants ont un « ! » au-dessus de la tête : ils ont besoin d'un préventionniste."]],
+    ["Les médailles ?", ["Elles récompensent la régularité et l'exploration. Chaque médaille rapporte des crédits."]],
+  ]],
+  ['eleve', 'Ltn Dubois', 'Se déplacer et régler le jeu', [
+    ["Comment je me déplace ?", ["Touche une case de la carte : ton personnage y va tout seul. Touche un personnage pour lui parler.", "Sur ordinateur, les flèches ou ZQSD, et Espace pour interagir."]],
+    ["Je joue peu aux jeux vidéo…", ["Active le mode confort dans Menu → Réglages : plus de temps pour répondre et des textes plus grands."]],
+  ]],
+];
+GUIDES.forEach(([id, name, topic, qa], i) => { const p = genPersonEarly(760 + i); PAL[id] = CHEMISETTE(p.H, p.S);
+  NPCS[id] = { name, role:`Élève officier · ${topic}`, pal:id, special:() => guideTalk(id) }; });
+async function guideTalk(id){
+  const g = GUIDES.find(x => x[0] === id); const n = NPCS[id]; const qa = g[3];
+  S.guidesMet = S.guidesMet || {}; const first = !S.guidesMet[id]; S.guidesMet[id] = 1; save();
+  if (first) await say(`Salut ! Moi, c'est ${n.name}. Je peux t'expliquer : ${g[2].toLowerCase()}.`, n.name);
+  for (;;){ const c = await choose('Tu veux savoir quoi ?', [...qa.map(x => x[0]), 'Merci, ça ira'], n.name);
+    if (c < 0 || c >= qa.length) return; await say(qa[c][1], n.name); }
+}
+
+/* ---- Les livres bleus de prévention, cachés sur le campus ---- */
+const BOOKS_N = 6; let BOOK_POS = null;
+function bookPositions(sc){
+  if (BOOK_POS) return BOOK_POS; const M = sc.M; const cands = [];
+  for (let y = 1; y < M.H - 1; y++) for (let x = 1; x < M.W - 1; x++){ const k = x + ',' + y; if (M.block[y][x] || M.exits[k] || M.doors[k] || M.signs?.[k] || sc.npcAt(x, y)) continue;
+    if ([[0,1],[0,-1],[1,0],[-1,0]].some(([dx,dy]) => M.doors[(x+dx)+','+(y+dy)])) continue; cands.push([x, y]); }
+  const [sx, sy] = TOWN_START; const d = ([x, y], [a, b]) => Math.abs(x - a) + Math.abs(y - b);
+  const first = cands.filter(c => d(c, [sx, sy]) >= 2 && d(c, [sx, sy]) <= 4).sort((a, b) => d(a, [sx, sy]) - d(b, [sx, sy]))[0] || cands[0];
+  const out = [first]; const r = rngFor(4711, 13); const pool = cands.map(c => [c, r()]).sort((a, b) => a[1] - b[1]).map(a => a[0]);
+  for (const c of pool){ if (out.length >= BOOKS_N) break; if (out.every(o => d(o, c) >= 9)) out.push(c); }
+  return BOOK_POS = out;
+}
+function bookStep(sc){
+  if (sc.mapId !== 'town') return; const pos = bookPositions(sc); S.books = S.books || {};
+  pos.forEach(([x, y], i) => { if (x !== sc.px || y !== sc.py || S.books[i]) return; S.books[i] = Date.now(); const n = Object.keys(S.books).length; save();
+    if (n === 1){ setTimeout(async () => { await say(["Un livre bleu de prévention ! Tu le ramasses.", "Il contient le Réglementodex : toutes les règles que tu rencontres en combat y seront rangées, avec leurs références.", `Il en reste ${BOOKS_N - 1} cachés sur le campus. Les élèves officiers pourront t'en parler.`], 'Livre bleu'); dexButton(); refreshHud(); }, 50); }
+    else { S.credits = (S.credits || 0) + 10; save(); toast(`Livre bleu ${n}/${BOOKS_N}`, '+10 crédits · +20 XP'); gain(20, 'Livre bleu de prévention'); } });
+}
+function bookMarks(ctx, ox, oy, z){
+  if (scene?.mapId !== 'town') return; const pos = bookPositions(scene); const t = performance.now(); S.books = S.books || {};
+  pos.forEach(([x, y], i) => { if (S.books[i]) return; const X = ox + (x*16 + 4)*z, Y = oy + (y*16 + 4 + Math.sin(t/260 + i)*1.2)*z;
+    ctx.fillStyle = '#0e1a33'; ctx.fillRect(X - z, Y - z, 10*z, 11*z); ctx.fillStyle = '#2d6aa3'; ctx.fillRect(X, Y, 8*z, 9*z); ctx.fillStyle = '#f5c518'; ctx.fillRect(X + 2*z, Y + 2*z, 4*z, z); ctx.fillStyle = '#e9e4dc'; ctx.fillRect(X, Y + 8*z, 8*z, z); });
+}
+const dexOpen = () => !!(S?.books && Object.keys(S.books).length) || (S?.commissions || 0) > 0 || badgeCount() > 0;
+function dexButton(){ const b = $('#bDex'); if (b) b.hidden = !dexOpen(); }
+MEDALS.push(['livres', 'Bibliothèque bleue', 'Trouver les six livres bleus de prévention de l\'ENSOSP', 'a', s => Object.keys(s.books || {}).length >= BOOKS_N]);
+
+/* ---- Antennes SSIAP dans les grandes villes ---- */
+const SSIAP_ANT = [['ssiap_bordeaux', 'bordeaux', 'Antenne SSIAP de Bordeaux'], ['ssiap_lyon', 'lyon', 'Antenne SSIAP de Lyon']];
+SSIAP_ANT.forEach(([id, city, name], i) => { PAL[id] = { H:'#2a2a2a', S:'#e8b48a', C:'#c8102e', Y:'#ffffff', P:'#14203a', B:'#101010' };
+  NPCS[id] = { name, role:'Formateur SSIAP · jokers, jury et corrections', pal:id, special:() => ssiapCenter() }; });
+function ssiapNpcs(sc){
+  const a = SSIAP_ANT.find(x => x[1] === sc.mapId); if (!a || sc.M.route) return;
+  const tiles = cityFreeTiles(sc, 9090 + a[1].length); const t = tiles.find(([x, y]) => sc.walkable(x, y) && sc.npcs.every(n => Math.abs(n.x - x) + Math.abs(n.y - y) >= 5));
+  if (t) sc.npcs.push({ id:a[0], x:t[0], y:t[1], f:'down' });
+}
+
 const IN_TILE_BASE = { '#':'wall', '.':'floor', 'c':'boxes', 'X':'exitdoor', 'S':'shelf', 'R':'fridge', 'K':'counter', 'g':'ext', 'D':'mat' };
 const IN_BLOCK = new Set('#cFXpSRKBQegbn');
 const TEX = {};
@@ -5844,7 +5950,7 @@ const ZONE_BUILDINGS = {
     B('mainTotem',35,10,3,3,null,null,null,'LA MAIN',{ landmark:'mainTotem', msg:"Le totem de la Main, sur le campus de l'ENSOSP. On y lit : « Protège-toi de toi-même »." }),
     B('garrigueb',34,14,7,4,'#7a3b1e','#e8d2b0',[37,17],'LA GARRIGUE',{ band:'#2f6b35', doorCol:'#7a3b1e' }),
     B('store',3,24,10,5,'#2f7a4a','#f1efe8',[8,28],"L'ÉPI D'OR · TYPE M",{ band:'#f5c518', glass:true, doorCol:'#5d6c84' }),
-    B('ecolejf',17,24,7,4,'#9b5a2a','#efd99a',[20,27],'ÉCOLE · TYPE R',{ band:'#c8102e', doorCol:'#2d6aa3' }),
+    B('ecolejf',17,24,7,4,'#9b5a2a','#efd99a',[20,27],'SALLES DE COURS · TYPE R',{ band:'#c8102e', doorCol:'#2d6aa3' }),
     B('ssiapc',27,24,8,4,'#c8102e','#f3f5f7',[30,27],'FORMATION SSIAP',{ band:'#14203a', glass:true, doorCol:'#14203a' }),
   ],
 };
@@ -6220,11 +6326,11 @@ const World = {
     ctx.font = `${fs}px "Pixelify Sans", monospace`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     for (const l of this.labels){ const X = ox + l.x*z, Y = oy + l.y*z; const w = ctx.measureText(l.text).width + 6*z;
       ctx.fillStyle = '#161a24'; ctx.fillRect(Math.round(X-w/2), Math.round(Y-fs*.7), Math.round(w), Math.round(fs*1.4)); ctx.fillStyle = '#ffffff'; ctx.fillText(l.text, X, Y+1); }
-    netLabels(ctx, ox, oy, z, fs); netEmotes(ctx, ox, oy, z); questMarks(ctx, ox, oy, z);
+    netLabels(ctx, ox, oy, z, fs); netEmotes(ctx, ox, oy, z); questMarks(ctx, ox, oy, z); bookMarks(ctx, ox, oy, z);
   },
   async onStep(){
     save(); netPub(); const k = this.px+','+this.py;
-    questStep(this); if (await rivalCheck(this)) return;
+    questStep(this); bookStep(this); if (await rivalCheck(this)) return;
     if (S.dispatch && S.dispatch.map === this.mapId){ S.dispatch.steps++; refreshHud(); }
     const ex = this.M.exits[k];
     if (ex){
