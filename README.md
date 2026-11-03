@@ -1,6 +1,6 @@
 # La Tournée du Préventionniste
 
-Jeu sérieux de prévention incendie, de l'ENSOSP à Paris : commissions de sécurité ERP, feux, recherche des causes d'incendie (RCCI) et près de 900 questions PRV1 / PRV2.
+Jeu sérieux (ou pas) de prévention incendie, de l'ENSOSP à Paris : commissions de sécurité ERP, feux, recherche des causes d'incendie (RCCI) et près de 900 questions PRV1 / PRV2.
 
 **Jouer :** https://batex23.github.io/la-tournee-du-preventionniste/
 
