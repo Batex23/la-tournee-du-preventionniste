@@ -338,6 +338,7 @@ code{font-family:var(--f-disp);background:#e8edf3;color:var(--ink);padding:0 4px
 .teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.team{border:3px solid var(--tc);border-radius:8px;padding:8px 10px;background:#fff;display:flex;flex-direction:column}.team span{font-size:13px;color:var(--steel)}.tdot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}.gbar{height:18px;background:#e3e7ec;border:2px solid var(--ink);border-radius:9px;overflow:hidden}.gbar i{display:block;height:100%;background:linear-gradient(90deg,#f5c518,#c8102e)}#teach select,#teach input,#panel select{background:#fff;color:#14203a;border:2px solid #14203a;border-radius:6px;padding:4px 6px;font:inherit;color-scheme:light}
 .mdls{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.mdl{display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;border:3px solid var(--mc);border-radius:10px;padding:10px 8px;background:#fff;color:var(--ink)}.mdl .disc{width:38px;height:38px;border-radius:50%;background:var(--mc);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;border:2px solid #14203a}.mdl b{font-size:13.5px}.mdl span{font-size:12px;color:var(--steel)}.mdl .disc{font-size:22px;color:#fff}.mdl em{font-size:11px;font-style:normal;color:var(--mc);font-weight:700}.mdl.off{opacity:.55;border-style:dashed}.mdl.off .disc{background:#d5dae1;color:#5d6c84}.bracket{display:flex;gap:16px;overflow-x:auto;padding:8px 0}.bcol{display:flex;flex-direction:column;justify-content:space-around;gap:12px;min-width:200px}.bhead{font-family:var(--f-disp);text-align:center}.bmatch{border:2px solid var(--ink);border-radius:8px;background:#fff;overflow:hidden}.bmatch div{display:flex;justify-content:space-between;gap:8px;padding:6px 10px;font-size:clamp(14px,1.4vw,20px)}.bmatch div+div{border-top:1px solid #d5dae1}.bmatch .win{background:var(--green2);font-weight:700}
 #panel{z-index:42}
+.credp{background:#fff;border:2px solid #14203a;border-radius:999px;padding:0 6px;font-size:12px;line-height:20px;cursor:pointer;letter-spacing:-1px}.credp.low{background:#ffe3e0;border-color:#c8102e}.credp.zero{animation:pop 1s infinite}.credn{background:#ffe3e0;border-left:4px solid #c8102e;padding:6px 10px;border-radius:4px;font-size:14px}.credn.ok{background:#e5f4e4;border-color:#2e9e5b}
 .argboard{background:#5a3a22;border:6px solid #3a2414;border-radius:6px;padding:16px;margin:12px 0;text-align:center;box-shadow:inset 0 0 0 2px #7a5230}.abT{font-family:var(--f-disp);color:#fff;background:#c8102e;border-radius:4px;padding:4px 10px;display:inline-block;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase}.abN{font-family:var(--f-disp);font-size:22px;color:#14203a;background:linear-gradient(#f0d77a,#c9a640);border:2px solid #3a2414;border-radius:4px;padding:6px 10px;margin:8px auto;max-width:320px}
 .coin{display:inline-block;background:#f5c518;color:#14203a;font-weight:700;border-radius:999px;padding:0 8px}.chain{list-style:none;padding:0;margin:10px 0;display:grid;gap:8px}.chain li{display:flex;gap:10px;align-items:center;border:2px solid var(--ink);border-radius:10px;padding:8px 10px;background:#fff;color:var(--ink);position:relative}.chain li em{margin-left:auto;font-style:normal;font-size:12px;font-weight:700;color:#c8102e;white-space:nowrap}.cic{font-size:24px}
 .mhead{font-family:var(--f-disp);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--steel);margin:16px 0 6px}.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.mtile{display:flex;align-items:center;gap:10px;text-align:left;font:inherit;background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:10px;padding:10px 12px;cursor:pointer;min-height:56px;box-shadow:0 3px 0 var(--ink)}.mtile:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}.mtile.hot{background:#fff4d0;border-color:#c8102e;box-shadow:0 3px 0 #c8102e}.mic{font-size:24px;line-height:1;flex:none}.mtx{display:flex;flex-direction:column;line-height:1.2}.mtx b{font-size:15px}.mtx small{font-size:12px;color:var(--steel)}.mfoot{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;justify-content:center}
@@ -416,7 +417,7 @@ code{font-family:var(--f-disp);background:#e8edf3;color:var(--ink);padding:0 4px
       <div><b id="mQ">0</b>questions</div>
       <div><b id="mT">0</b>thèmes</div>
       <div><b id="mP">–</b>joueurs classés</div>
-      <div><b>v0.25</b>version test</div>
+      <div><b>v0.26</b>version test</div>
     </div>
   </div>
 </div>
@@ -821,11 +822,12 @@ function npcPortrait(palKey){ const c = document.createElement('canvas'); c.widt
 async function battle(cfg){
   if (DEV.on && DEV.autowin){ const good = cfg.training ? (cfg.rounds||10) : (cfg.hp||3); if (!cfg.training) S.wins = (S.wins||0) + 1; gain(good*5 + (cfg.training ? 0 : (cfg.xp||20)), `Combat passé : ${cfg.name}`); return { win:true, good, asked:good }; }
   const training = cfg.training;
+  if (!training && credOn() && credGet() <= 0) await credGate(cfg);
   if (!cfg.questions && !(DEV.on && DEV.autowin)) await memoBefore(cfg.themes);
   PICK_LV = cfg.lv || null; PICK_TYPE = cfg.site && SITES[cfg.site] ? SITES[cfg.site].type : null; const qs = cfg.questions || pickQuestions(cfg.themes, training ? cfg.rounds : 40); PICK_LV = null; PICK_TYPE = null;
   if (!qs.length){ await say("Aucune question active sur ce thème pour l'instant."); return { win:false, good:0, asked:0 }; }
   const maxOpp = training ? qs.length : cfg.hp; let opp = maxOpp;
-  const maxMe = (badgeCount() < 3 && !training) ? 4 : 3; let me = maxMe; let good = 0, asked = 0; const missed = []; let streak = 0, fxBonus = 0; setStreak(0);
+  const maxMe = (badgeCount() < 3 && !training) ? 4 : 3; let me = (!training && credOn()) ? Math.min(maxMe, credGet()) : maxMe; let good = 0, asked = 0; const missed = []; let streak = 0, fxBonus = 0; setStreak(0);
   const L = $('#battle');
   L.innerHTML = `<div class="arena">
     <div class="foes">
@@ -847,7 +849,7 @@ async function battle(cfg){
   upd(); openLayer(L); L.scrollTop = 0;
   $('#bub').textContent = `« ${cfg.intro || 'En avant !'} »`;
   for (const q of qs){
-    if (opp <= 0 || (!training && me <= 0)) break;
+    if (opp <= 0 || (!training && me <= 0) || (cfg.stopGood && good >= cfg.stopGood)) break;
     if (asked > 0 && cfg.taunts && Math.random() < .55) $('#bub').textContent = `« ${pick(cfg.taunts)} »`;
     const tq0 = Date.now(); const ok = await askQuestion(q, training && !cfg.timed ? 0 : confortSecs(cfg.secs || 30), { renfort: () => { if (training || me >= maxMe) return false; me++; upd(); return true; } });
     asked++; record(q, ok); if (!ok) missed.push(q); if (cfg.revision) S.revCount = (S.revCount||0) + 1;
@@ -863,9 +865,10 @@ async function battle(cfg){
   const xp = good * (training ? 2 : 5) + (win && !training ? (cfg.xp || 20) : 0) + fxBonus;
   const title = training ? 'Série terminée' : (win ? 'Victoire !' : 'Défaite');
   const txt = training ? 'Les questions manquées reviendront plus souvent dans tes prochains combats.' : (win ? cfg.win : cfg.lose);
+  const credN = credAfter(cfg, me, good);
   $('#qbox').innerHTML = `<div class="result"><div class="eyebrow">${esc(cfg.name)}</div><h3>${title}</h3>
     <div class="big">${good} / ${asked}</div><p>bonnes réponses · <strong>+${xp} XP</strong>${lost ? ` · <strong>−${lost} crédits</strong>` : ''}</p>
-    <p>${esc(txt||'')}</p><button class="btn ${win?'':'warn'}" id="bEnd" type="button">Retour à la carte</button></div>`;
+    <p>${esc(txt||'')}</p>${credN}<button class="btn ${win?'':'warn'}" id="bEnd" type="button">Retour à la carte</button></div>`;
   $('#bub').textContent = ''; setStreak(0); if (win && !training) fxVictory();
   setTimeout(() => $('#bEnd')?.focus(), 50);
   await waitBtn('#bEnd');
@@ -1172,7 +1175,7 @@ function refreshHud(){
   if (S.dispatch && S.dispatch.map === mid){ const inc = (scene.M.incidents || []).find(i => i.key === S.dispatch.key); if (inc && incActive(inc.key)) o = `Départ CTA : <b>${esc(INCIDENTS[inc.type].name)}</b> · ${Math.max(0, S.dispatch.limit - S.dispatch.steps)} pas pour le bonus de rapidité.`; }
   $('#obj').innerHTML = o;
   const zname = placeName(mid);
-  $('#badges').innerHTML = `<span class="badge on" title="Badges d'étape">${badgeCount()}</span><span class="bdet" style="font-size:12px;color:var(--steel2);margin-left:4px;align-self:center">/ ${ETAPES.length} badges · <span class="coin" id="hCoin">🪙 ${S.credits||0}</span> · ${esc(zname)}</span>${dailyHud()}${S.classe ? `<button type="button" class="hmis" id="hCls" style="background:#fff">Classe ${esc(S.classe)}${defisPourMoi().length ? ` · ${defisPourMoi().length} défi${defisPourMoi().length > 1 ? 's' : ''}` : ''}</button>` : ''}${S.classe && NET.room ? '<button type="button" class="hmis" id="hEmo" style="background:#fff" aria-label="Émotes">😀</button>' : ''}`;
+  $('#badges').innerHTML = `<span class="badge on" title="Badges d'étape">${badgeCount()}</span><span class="bdet" style="font-size:12px;color:var(--steel2);margin-left:4px;align-self:center">/ ${ETAPES.length} badges · ${credPill()}<span class="coin" id="hCoin">🪙 ${S.credits||0}</span> · ${esc(zname)}</span>${dailyHud()}${S.classe ? `<button type="button" class="hmis" id="hCls" style="background:#fff">Classe ${esc(S.classe)}${defisPourMoi().length ? ` · ${defisPourMoi().length} défi${defisPourMoi().length > 1 ? 's' : ''}` : ''}</button>` : ''}${S.classe && NET.room ? '<button type="button" class="hmis" id="hEmo" style="background:#fff" aria-label="Émotes">😀</button>' : ''}`;
   if ($('#hEmo')) $('#hEmo').onclick = () => { if (!busy()) emoteMenu(); };
   if ($('#hCls')) $('#hCls').onclick = () => { if (!busy()) classPanel(); };
   if ($('#hMis')) $('#hMis').onclick = () => { if (!busy()) dailyPanel(); };
@@ -1584,7 +1587,7 @@ async function rocheTuto(){
       "Pour te déplacer : les flèches ou ZQSD sur ordinateur, la croix sur téléphone. Pour parler ou examiner : A ou Espace.",
       "Ton but : devenir le meilleur préventionniste de France. Tu vas traverser quinze étapes, de l'ENSOSP jusqu'à Paris.",
       "Dans chaque ville, un examinateur te remet un badge. Le badge ouvre la route vers la ville suivante.",
-      "Pour gagner : réponds juste aux questions. Une erreur coûte un cœur de crédibilité ; trois erreurs, et tu perds le combat. Ce n'est pas grave : tu peux toujours recommencer."], n);
+      "Pour gagner : réponds juste aux questions. Une erreur coûte un cœur de crédibilité. Plus de cœurs, et tu perds le combat. Les cœurs se gardent d'un combat à l'autre : pour les regagner, tu révises quelques questions, sans chrono."], n);
     S.tuto = 1; save();
     const inc = scene.M.incidents?.[0]; if (inc){ S.incidents && delete S.incidents[inc.key]; dispatchOn(scene.M); S.dispatch.key = inc.key; await say(["Tiens, justement : la radio !","Le CTA nous engage sur un feu de poubelles, tout près. Une balise bleue clignote au-dessus du feu. Vas-y vite : arriver rapidement rapporte un bonus."], n); }
     refreshHud(); return true;
@@ -5031,7 +5034,7 @@ async function megafeuTalk(){
 MEDALS.push(['megafeu', 'Mégafeu de Gironde', 'Traiter les reprises du mégafeu de juillet 2026, route des Vignobles', 'o', s => s.megafeu?.st === 'done']);
 
 /* ================= v19 : RETOURS DES TESTEURS · EFFETS ET SENSATIONS ================= */
-const GAME_VER = 'v0.25';
+const GAME_VER = 'v0.26';
 const reduceMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
 const buzz = p => { try { if (S?.vibe !== false && navigator.vibrate) navigator.vibrate(p); } catch(e){} };
 
@@ -5673,7 +5676,7 @@ function progressionHelp(){
   ];
   panel(`<button type="button" class="btn alt close" id="phX">Fermer</button><div class="eyebrow">Comment progresser</div><h2>De la formation au badge</h2>
     <ol class="chain">${steps.map(([ic, t, d, gain], i) => `<li><span class="cic" aria-hidden="true">${ic}</span><span><b>${t}</b><br><span class="ref">${esc(d)}</span></span>${i < steps.length - 1 ? `<em>→ ${gain}</em>` : ''}</li>`).join('')}</ol>
-    <p class="lede">Les crédits (🪙) se gagnent surtout avec les commissions. Ils servent aux jokers du centre SSIAP et à la boutique du vestiaire. En combat, un duel gagné rapporte bien plus qu'un duel perdu.</p>`);
+    <p class="lede">Les crédits (🪙) se gagnent surtout avec les commissions. Ils servent aux jokers du centre SSIAP et à la boutique du vestiaire. En combat, un duel gagné rapporte bien plus qu'un duel perdu.</p><p class="lede">Les cœurs de crédibilité (❤️) se gardent d'un combat à l'autre. Pour les regagner : une révision express, sans chrono (touche les cœurs en haut de l'écran).</p>`);
   $('#phX').onclick = closePanel;
 }
 function progressObjective(nextE){
@@ -5719,6 +5722,7 @@ const GUIDES = [
   ['cad_2', 'Ltn Morel', 'Crédits, jokers et boutique', [
     ["À quoi servent les crédits ?", ["Les crédits (🪙) se gagnent surtout en commission, mais aussi avec les quêtes, les médailles et le centre SSIAP.", "Ils achètent des jokers pour les combats et des tenues à la boutique."]],
     ["C'est quoi, les jokers ?", ["50/50 : retire la moitié des mauvaises réponses. Renfort : rend un cœur. Sursis : arrête le chrono.", "Ils s'affichent sous la question pendant les combats, dès que tu en as."]],
+    ["Et les cœurs de crédibilité ?", ["Chaque erreur en combat coûte un cœur, et les cœurs se gardent d'un combat à l'autre.", "Pour les regagner, révise seul : touche les cœurs en haut de l'écran, ou passe au carnet de révision de la caserne. Chaque bonne réponse rend un cœur, sans chrono."]],
     ["Où les acheter ?", ["Au centre de formation SSIAP, ici sur le campus, dans la Boutique du menu, et dans les antennes SSIAP de Bordeaux et de Lyon."]],
   ]],
   ['cad_3', 'Cne Haddad', 'Les feux et la RCCI', [
@@ -6002,6 +6006,58 @@ function argMarks(ctx, ox, oy, z){
   ctx.globalAlpha = a * .85; ctx.fillStyle = '#f6f3c8';
   const X = ox + (x * 16 + 10) * z, Y = oy + (y * 16 + 5) * z; ctx.fillRect(X, Y - z, z, 3 * z); ctx.fillRect(X - z, Y, 3 * z, z); ctx.globalAlpha = 1;
 }
+
+/* ================= v26 : CRÉDIBILITÉ PERSISTANTE =================
+   Les cœurs se gardent d'un combat à l'autre. Pour les regagner : réviser seul, sans chrono ni pression.
+   Chaque bonne réponse en révision (carnet, entraînement, révision express) rend un cœur. */
+const CRED_MAX = () => badgeCount() < 3 ? 4 : 3;
+const credOn = () => !!S && (S.tuto || 0) >= 5;
+function credGet(){ const m = CRED_MAX(); if (S.cred == null || S.cred > m) S.cred = m; if (S.cred < 0) S.cred = 0; return S.cred; }
+function credHearts(n, m){ return '❤️'.repeat(n) + '🤍'.repeat(Math.max(0, m - n)); }
+function credPill(){
+  if (!credOn()) return ''; const m = CRED_MAX(), c = credGet();
+  return `<button type="button" class="credp${c < m ? ' low' : ''}${c === 0 ? ' zero' : ''}" id="hCred" title="Crédibilité : ${c} sur ${m}">${credHearts(c, m)}</button> · `;
+}
+/* Questions à revoir en priorité : erreurs récentes, carnet, puis questions déjà vues mal maîtrisées, puis questions simples */
+function credQuestions(n){
+  const out = [], seen = new Set(); const add = q => { if (q && !seen.has(q.i) && q.o?.length >= 2 && out.length < n){ seen.add(q.i); out.push(q); } };
+  const byI = new Map(QUESTIONS.map(q => [q.i, q]));
+  [...(S.missLog || [])].reverse().forEach(i => add(byI.get(i)));
+  dueList().forEach(add);
+  QUESTIONS.filter(q => S.stats[q.i] && boxOf(S.stats[q.i]) < 3).sort(() => Math.random() - .5).forEach(add);
+  const tgt = targetLevel(); shuffle(QUESTIONS.filter(q => qLevel(q) <= tgt)).forEach(add);
+  return shuffle(out);
+}
+async function credRevision(){
+  if (busy()) return; const m = CRED_MAX(), c = credGet();
+  if (c >= m){ toast('Crédibilité au maximum', 'Tu peux quand même réviser au carnet, à la caserne.'); return; }
+  const need = m - c; const qs = credQuestions(need + 4);
+  await battle({ training:true, revision:true, stopGood:need, questions:qs, rounds:qs.length, name:'Révision express', role:`Regagner ta crédibilité · ${need} ${need > 1 ? 'cœurs' : 'cœur'} à retrouver`, pal:'roche', themes:[],
+    intro:"Pas de chrono, pas de pression. On revoit les questions où tu as buté. Chaque bonne réponse te rend un cœur." });
+  refreshHud();
+}
+/* Avant un combat sans crédibilité : révision express obligatoire, puis le combat */
+async function credGate(cfg){
+  await say([`Ta crédibilité est à zéro. Face à ${cfg.name || 'ton interlocuteur'}, tu ne serais pas pris au sérieux.`,
+    "Avant d'y aller, on révise quelques questions, au calme. Chaque bonne réponse te rend un cœur."], 'Lt Roche');
+  const m = CRED_MAX(); const qs = credQuestions(m + 4);
+  await battle({ training:true, revision:true, stopGood:m, questions:qs, rounds:qs.length, name:'Révision express', role:'Regagner ta crédibilité', pal:'roche', themes:[],
+    intro:"Prends le temps de lire chaque référence. Le combat t'attend juste après." });
+  if (credGet() <= 0){ S.cred = 1; save(); toast('Un cœur pour l\'effort', 'Lt Roche te fait confiance.'); }
+}
+/* Fin de combat : on garde les cœurs restants ; en révision solo, chaque bonne réponse rend un cœur */
+function credAfter(cfg, me, good){
+  if (!credOn()) return '';
+  const m = CRED_MAX();
+  if (!cfg.training){ S.cred = Math.max(0, Math.min(m, me)); save(); refreshHud();
+    if (S.cred >= m) return '';
+    return `<p class="credn">Crédibilité : ${credHearts(S.cred, m)}${S.cred === 0 ? ' · à zéro' : ''}. Pour la regagner, révise quelques questions : touche les cœurs en haut de l'écran.</p>`; }
+  if (cfg.timed) return '';
+  const before = credGet(); if (before >= m || !good) return '';
+  S.cred = Math.min(m, before + good); save(); refreshHud();
+  return `<p class="credn ok">Crédibilité : ${credHearts(S.cred, m)} (+${S.cred - before})</p>`;
+}
+document.addEventListener('click', e => { if (e.target.closest?.('#hCred')) credRevision(); });
 
 const IN_TILE_BASE = { '#':'wall', '.':'floor', 'c':'boxes', 'X':'exitdoor', 'S':'shelf', 'R':'fridge', 'K':'counter', 'g':'ext', 'D':'mat' };
 const IN_BLOCK = new Set('#cFXpSRKBQegbn');
