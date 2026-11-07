@@ -338,6 +338,7 @@ code{font-family:var(--f-disp);background:#e8edf3;color:var(--ink);padding:0 4px
 .teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.team{border:3px solid var(--tc);border-radius:8px;padding:8px 10px;background:#fff;display:flex;flex-direction:column}.team span{font-size:13px;color:var(--steel)}.tdot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}.gbar{height:18px;background:#e3e7ec;border:2px solid var(--ink);border-radius:9px;overflow:hidden}.gbar i{display:block;height:100%;background:linear-gradient(90deg,#f5c518,#c8102e)}#teach select,#teach input,#panel select{background:#fff;color:#14203a;border:2px solid #14203a;border-radius:6px;padding:4px 6px;font:inherit;color-scheme:light}
 .mdls{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.mdl{display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;border:3px solid var(--mc);border-radius:10px;padding:10px 8px;background:#fff;color:var(--ink)}.mdl .disc{width:38px;height:38px;border-radius:50%;background:var(--mc);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;border:2px solid #14203a}.mdl b{font-size:13.5px}.mdl span{font-size:12px;color:var(--steel)}.mdl .disc{font-size:22px;color:#fff}.mdl em{font-size:11px;font-style:normal;color:var(--mc);font-weight:700}.mdl.off{opacity:.55;border-style:dashed}.mdl.off .disc{background:#d5dae1;color:#5d6c84}.bracket{display:flex;gap:16px;overflow-x:auto;padding:8px 0}.bcol{display:flex;flex-direction:column;justify-content:space-around;gap:12px;min-width:200px}.bhead{font-family:var(--f-disp);text-align:center}.bmatch{border:2px solid var(--ink);border-radius:8px;background:#fff;overflow:hidden}.bmatch div{display:flex;justify-content:space-between;gap:8px;padding:6px 10px;font-size:clamp(14px,1.4vw,20px)}.bmatch div+div{border-top:1px solid #d5dae1}.bmatch .win{background:var(--green2);font-weight:700}
 #panel{z-index:42}
+.tdstage{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 16px;background:#fff8e0;border-bottom:2px solid var(--ink)}.tdsl{font-weight:700;margin-right:4px}.tdstage small{opacity:.65;font-size:11px}.tdsolo{margin-left:8px;font-size:14px}
 .credp{background:#fff;border:2px solid #14203a;border-radius:999px;padding:0 6px;font-size:12px;line-height:20px;cursor:pointer;letter-spacing:-1px}.credp.low{background:#ffe3e0;border-color:#c8102e}.credp.zero{animation:pop 1s infinite}.credn{background:#ffe3e0;border-left:4px solid #c8102e;padding:6px 10px;border-radius:4px;font-size:14px}.credn.ok{background:#e5f4e4;border-color:#2e9e5b}
 .argboard{background:#5a3a22;border:6px solid #3a2414;border-radius:6px;padding:16px;margin:12px 0;text-align:center;box-shadow:inset 0 0 0 2px #7a5230}.abT{font-family:var(--f-disp);color:#fff;background:#c8102e;border-radius:4px;padding:4px 10px;display:inline-block;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase}.abN{font-family:var(--f-disp);font-size:22px;color:#14203a;background:linear-gradient(#f0d77a,#c9a640);border:2px solid #3a2414;border-radius:4px;padding:6px 10px;margin:8px auto;max-width:320px}
 .coin{display:inline-block;background:#f5c518;color:#14203a;font-weight:700;border-radius:999px;padding:0 8px}.chain{list-style:none;padding:0;margin:10px 0;display:grid;gap:8px}.chain li{display:flex;gap:10px;align-items:center;border:2px solid var(--ink);border-radius:10px;padding:8px 10px;background:#fff;color:var(--ink);position:relative}.chain li em{margin-left:auto;font-style:normal;font-size:12px;font-weight:700;color:#c8102e;white-space:nowrap}.cic{font-size:24px}
@@ -417,7 +418,7 @@ code{font-family:var(--f-disp);background:#e8edf3;color:var(--ink);padding:0 4px
       <div><b id="mQ">0</b>questions</div>
       <div><b id="mT">0</b>thèmes</div>
       <div><b id="mP">–</b>joueurs classés</div>
-      <div><b>v0.26</b>version test</div>
+      <div><b>v0.27</b>version test</div>
     </div>
   </div>
 </div>
@@ -1369,7 +1370,7 @@ const ARCHI = {
 };
 function drawBuilding(c, b){
   const W = b.w*16, H = b.h*16;
-  if (b.landmark && LANDMARKS[b.landmark]){ LANDMARKS[b.landmark](c, W, H, b); return; }
+  if (b.landmark && LANDMARKS[b.landmark]){ LANDMARKS[b.landmark](c, W, H, b); if (b.door) lmDoor(c, b, H); return; }
   const st = ARCHI[b.style] || {}; const r = rngFor(b.x*31 + b.w, b.y*17 + b.h);
   const wall = b.wall || (st.walls ? st.walls[Math.floor(r()*st.walls.length)] : '#e9e4dc');
   const roof = b.roof || (st.roofs ? st.roofs[Math.floor(r()*st.roofs.length)] : '#4a5670');
@@ -1709,13 +1710,15 @@ Object.assign(CHAR_TILE, { X:'stele', x:'stelegrass' });
 TOWN_BLOCK.add('X'); TOWN_BLOCK.add('x');
 
 const MEMORIALS = {
-  bruz:{ name:'Clinique psychiatrique de Bruz', place:'Bruz (Ille-et-Vilaine)', date:'juin 1993', where:'Route 7 · forêt de Brocéliande', type:'U',
-    toll:'Bilan à compléter',
-    story:["En juin 1993, un incendie frappe la clinique psychiatrique de Bruz, au sud de Rennes.","Cette fiche attend le récit détaillé de Baptiste : circonstances, bilan et enseignements."],
-    factors:["À compléter."],
-    changed:["À compléter."],
+  bruz:{ name:'Clinique psychiatrique de Bruz', place:'Bruz, au sud de Rennes (Ille-et-Vilaine)', date:'25 juin 1993', where:'Route 7 · forêt de Brocéliande', type:'U',
+    toll:'20 morts',
+    story:["Le 25 juin 1993, un incendie se déclare dans une clinique psychiatrique de Bruz, près de Rennes.","Vingt personnes y perdent la vie. C'est l'un des incendies d'établissement de soins les plus meurtriers en France.","Trente ans plus tard, l'ENSOSP en a fait un retour d'expérience consacré à l'évacuation et à la mise à l'abri."],
+    factors:["Des patients qui ne peuvent pas tous évacuer seuls, ou rapidement : dans un établissement de soins, l'évacuation dépend du personnel.","La nuit, le personnel présent est réduit : chaque minute gagnée par la détection et le compartimentage compte."],
+    changed:["Le drame nourrit la doctrine propre aux établissements de type U : on ne compte pas sur une évacuation totale, on protège sur place et on organise le transfert horizontal des patients."],
     reflex:"Dans un établissement de soins, on ne peut pas toujours évacuer : on protège sur place et on transfère les patients horizontalement, vers une zone protégée du même niveau.",
-    quiz:[] },
+    quiz:[
+      { q:"Combien de personnes sont mortes dans l'incendie de la clinique de Bruz, en 1993 ?", o:['2','8','20','46'], c:2, e:"Vingt personnes ont perdu la vie le 25 juin 1993." },
+      { q:"Dans un établissement de type U, quelle stratégie privilégie-t-on en cas d'incendie ?", o:["Le transfert horizontal vers une zone protégée du même niveau","L'évacuation immédiate de tous les patients par les escaliers","Le confinement de chaque patient dans sa chambre, portes ouvertes","L'attente des secours sans bouger personne"], c:0, e:"On ne peut pas toujours évacuer : on protège sur place et on déplace les patients horizontalement, derrière un recoupement." } ] },
   cinqsept:{ name:'Le 5-7', place:'Saint-Laurent-du-Pont (Isère)', date:'1er novembre 1970', where:'Route 12 · sortie du tunnel, en Chartreuse', type:'P',
     toll:'146 morts, des jeunes pour la plupart',
     story:["Vers 1 h 40, dans la discothèque le 5-7, le feu prend dans la galerie de l'étage, sans doute une allumette jetée sur un siège rembourré de mousse.","Le décor en polyuréthane et en papier mâché (grottes, habillages des piliers) s'embrase en quelques minutes et dégage des fumées toxiques."],
@@ -1746,6 +1749,53 @@ const MEMORIALS = {
       { q:"Qu'est-ce qui a permis au feu de se propager si vite à Pailleron ?", o:["Les vides des faux plafonds et les panneaux en polystyrène","Un stockage de gaz au sous-sol","Le vent","Une explosion de chaudière"], c:0, e:"Les vides non recoupés ont fait cheminée, et le polystyrène a alimenté le feu." },
       { q:"Quelle mesure a été généralisée dans les écoles après le drame ?", o:["L'alarme et les exercices d'évacuation","Les extincteurs automatiques à eau partout","La suppression des étages","Le gardiennage de nuit"], c:0, e:"Les exercices d'évacuation et l'alarme sont devenus obligatoires." },
       { q:"Quelle était l'origine de l'incendie ?", o:["Un feu volontaire allumé par deux élèves","Un défaut électrique","Un chauffage d'appoint","La foudre"], c:0, e:"Deux élèves ont mis le feu à une corbeille avec du white-spirit." } ] },
+  galeries:{ name:'Les Nouvelles Galeries', place:'Marseille, la Canebière', date:'28 octobre 1938', where:'Route 3 · Camargue, en quittant Marseille', type:'M',
+    toll:'73 morts, en majorité des employées',
+    story:["En début d'après-midi, le feu prend dans le grand magasin des Nouvelles Galeries, pendant des travaux de modernisation : probablement un mégot mal éteint.","Poussées par un fort mistral, les flammes trouvent des parquets cirés, des tentures, des tapis, des tissus. En moins d'un quart d'heure, le magasin est un brasier."],
+    factors:["Les secours arrivent par petits groupes : une grande partie des moyens est mobilisée ailleurs, au parc Chanot, pour un congrès politique.","Des milliers de curieux envahissent la Canebière : les voitures roulent sur les tuyaux, qui éclatent.","Le chef des pompiers est blessé au début de l'intervention : le commandement se désorganise."],
+    changed:["La ville est placée sous la tutelle de l'État en mars 1939.","Un décret-loi du 23 juillet 1939 crée le bataillon de marins-pompiers de Marseille : la sécurité de la ville est confiée à la Marine nationale."],
+    reflex:"Un incendie se gagne avant l'arrivée des secours : matériaux, compartimentage, alarme, évacuation. Et sur l'intervention, l'accès des engins et la protection des établissements de tuyaux sont vitaux.",
+    quiz:[
+      { q:"Quelle unité est créée en 1939, après l'incendie des Nouvelles Galeries ?", o:["Le bataillon de marins-pompiers de Marseille","La brigade de sapeurs-pompiers de Paris","L'ENSOSP","Le SDIS des Bouches-du-Rhône"], c:0, e:"Un décret-loi du 23 juillet 1939 crée le bataillon de marins-pompiers de Marseille." },
+      { q:"Combien de victimes a fait l'incendie des Nouvelles Galeries ?", o:['13','37','73','173'], c:2, e:"73 morts, en majorité des employées du magasin." },
+      { q:"Quel élément a gêné l'intervention sur la Canebière ?", o:["La foule de curieux et les véhicules roulant sur les tuyaux","Une panne générale d'électricité","La neige","L'absence de bouches d'incendie dans toute la ville"], c:0, e:"Des milliers de personnes ont envahi la Canebière ; des voitures roulaient sur les tuyaux, qui éclataient." } ] },
+  azf:{ name:'Usine AZF', place:'Toulouse (Haute-Garonne)', date:'21 septembre 2001, 10 h 17', where:'Route 5 · canal des Deux-Mers, en quittant Toulouse', type:'Installation classée Seveso',
+    toll:'31 morts et des milliers de blessés',
+    story:["À 10 h 17, plus de 300 tonnes de nitrate d'ammonium explosent dans un hangar de l'usine AZF, à quelques kilomètres du centre de Toulouse.","L'onde de choc est enregistrée comme un séisme de magnitude 3,4. Un cratère d'une quarantaine de mètres de diamètre se forme, et une grande partie des vitres de la ville est soufflée."],
+    factors:["Un site industriel à hauts risques au contact direct de la ville : quartiers d'habitation, établissements scolaires, hôpitaux.","Le rapport officiel de 2006 retient un mélange accidentel de nitrate d'ammonium et d'un produit chloré incompatible, déversé peu avant l'explosion. Cette thèse a longtemps été contestée par l'exploitant.","L'ancien directeur du site et la société exploitante ont été condamnés en 2017."],
+    changed:["La loi du 30 juillet 2003 (loi Bachelot) crée les plans de prévention des risques technologiques (PPRT) autour des sites Seveso.","Elle impose aussi la garantie des risques technologiques dans les contrats d'assurance habitation."],
+    reflex:"Autour d'un site Seveso, l'urbanisation et les ERP voisins se pensent avec le risque : PPRT, mise à l'abri, information des populations.",
+    quiz:[
+      { q:"Quel produit a explosé à l'usine AZF ?", o:["Du nitrate d'ammonium","Du chlore liquide","Du gaz naturel","De l'hydrogène"], c:0, e:"Plus de 300 tonnes de nitrate d'ammonium stockées dans un hangar." },
+      { q:"Quel outil la loi de 2003 crée-t-elle autour des sites Seveso ?", o:["Le plan de prévention des risques technologiques (PPRT)","Le plan local d'urbanisme (PLU)","Le plan ORSEC","Le registre de sécurité"], c:0, e:"La loi Bachelot du 30 juillet 2003 crée les PPRT." },
+      { q:"Combien de morts a fait la catastrophe d'AZF ?", o:['3','31','131','310'], c:1, e:"31 morts et des milliers de blessés." } ] },
+  puisseguin:{ name:'Accident de Puisseguin', place:'Puisseguin, près de Libourne (Gironde)', date:'23 octobre 2015, vers 7 h 30', where:'Route 6 · vignobles du Libournais', type:'Transport de personnes',
+    toll:'43 morts',
+    story:["Sur une petite route du vignoble, un camion se met en portefeuille dans un virage serré et percute un autocar de 49 personnes, des retraités partis en excursion.","Les deux véhicules prennent feu immédiatement. Seuls le conducteur du car et sept passagers parviennent à sortir."],
+    factors:["Un réservoir de gazole supplémentaire, non conforme, fixé à l'arrière de la cabine du camion.","Des matériaux intérieurs du car inflammables, qui dégagent des fumées toxiques.","Des trappes de désenfumage difficiles à ouvrir, des issues et des portes difficiles à utiliser dans la fumée."],
+    changed:["Le BEA-TT recommande de contrôler les réservoirs additionnels, d'améliorer la tenue au feu et la toxicité des matériaux des véhicules, de simplifier les dispositifs de désenfumage et de renforcer l'éclairage d'évacuation."],
+    reflex:"Comme dans un ERP : réaction au feu des matériaux, désenfumage facile à manœuvrer, issues repérables dans la fumée. Les mêmes principes valent pour un car.",
+    quiz:[
+      { q:"Quel élément du camion a aggravé l'incendie de Puisseguin ?", o:["Un réservoir de gazole supplémentaire non conforme","Une cargaison de bouteilles de gaz","Des pneus rechapés","Un chargement de produits chimiques"], c:0, e:"Le BEA-TT pointe un réservoir additionnel non conforme fixé derrière la cabine." },
+      { q:"Laquelle de ces mesures fait partie des recommandations du BEA-TT ?", o:["Simplifier l'ouverture des dispositifs de désenfumage des cars","Interdire les excursions en car","Supprimer les vitres des autocars","Limiter les cars à 20 passagers"], c:0, e:"Désenfumage plus simple, matériaux moins toxiques, éclairage d'évacuation renforcé, réservoirs contrôlés." } ] },
+  montblanc:{ name:'Tunnel du Mont-Blanc', place:'Chamonix (Haute-Savoie)', date:'24 mars 1999', where:'Route 11 · lacs du Jura, vers Chamonix', type:'Tunnel routier',
+    toll:'39 morts',
+    story:["Un poids lourd chargé de farine et de margarine prend feu dans le tunnel du Mont-Blanc.","L'incendie dure 53 heures. La température atteint environ 1 000 °C : la margarine brûle comme un hydrocarbure."],
+    factors:["La ventilation pousse les fumées toxiques vers les usagers, plus vite qu'ils ne peuvent fuir.","Les câbles fondent, l'éclairage s'éteint ; des véhicules abandonnés bloquent les engins de secours.","Les abris, tous les 600 mètres, protègent mal contre la fumée. Le détecteur de fumée le plus proche était hors service."],
+    changed:["Le tunnel reste fermé trois ans. Il rouvre avec une galerie d'évacuation, des abris pressurisés, une détection automatique et un poste de secours au milieu du tunnel.","L'enquête contribue à la création du BEA-TT, le bureau d'enquêtes sur les accidents de transport terrestre."],
+    reflex:"Désenfumage et détection décident de tout dans un volume fermé : un mauvais sens de ventilation tue plus vite que les flammes.",
+    quiz:[
+      { q:"Combien de temps l'incendie du tunnel du Mont-Blanc a-t-il duré ?", o:['5 heures','12 heures','53 heures','10 jours'], c:2, e:"Cinquante-trois heures, avec des températures proches de 1 000 °C." },
+      { q:"Quel facteur a été décisif dans le bilan ?", o:["La ventilation qui a poussé les fumées vers les usagers","Une explosion de citerne","L'effondrement de la voûte","Une inondation du tunnel"], c:0, e:"Les fumées toxiques ont rattrapé les usagers bloqués dans le tunnel." } ] },
+  bazar:{ name:'Le Bazar de la Charité', place:'Paris 8e, rue Jean-Goujon', date:'4 mai 1897', where:'Route 14 · banlieue sud, aux portes de Paris', type:'T · L',
+    toll:'Plus de 120 morts, surtout des femmes',
+    story:["Une grande vente de charité réunit la haute société parisienne dans un hangar décoré en rue médiévale, avec ses stands en bois, papier mâché et toile.","Vers 16 h 30, dans la salle du cinématographe, une nouveauté, les vapeurs d'éther de la lampe de projection s'enflamment au moment où l'on frotte une allumette. En un quart d'heure, tout est détruit."],
+    factors:["Un décor entièrement combustible : bois, papier mâché, velum de toile.","Une foule nombreuse dans un espace aux sorties insuffisantes.","Un appareil dangereux (éther, flamme nue) installé au milieu du public."],
+    changed:["Le drame marque durablement la sécurité des salles de spectacle et de projection en France. Une chapelle, Notre-Dame-de-Consolation, est construite à l'emplacement du bazar."],
+    reflex:"Décors et aménagements temporaires d'un ERP : réaction au feu des matériaux, dégagements suffisants, et aucune source de danger au contact du public.",
+    quiz:[
+      { q:"Qu'est-ce qui a déclenché l'incendie du Bazar de la Charité ?", o:["Les vapeurs d'éther de la lampe du cinématographe","Une cheminée mal ramonée","La foudre","Un poêle à charbon"], c:0, e:"L'éther de la lampe de projection s'est enflammé quand on a frotté une allumette." },
+      { q:"Pourquoi le feu s'est-il propagé si vite ?", o:["Un décor de bois, papier mâché et toile","Un stock de feux d'artifice","Une fuite de gaz de ville","Un vent violent"], c:0, e:"Tout le décor de rue médiévale était combustible : en quinze minutes, le hangar était détruit." } ] },
   notredame:{ name:'Notre-Dame de Paris', place:'Paris 4e', date:'15 avril 2019', where:'Paris · île de la Cité', type:'V',
     toll:'Aucun mort, la flèche et une grande partie de la toiture détruites',
     story:["Vers 18 h 20, la détection incendie se déclenche. L'agent chargé de vérifier est envoyé au mauvais endroit.","Le feu n'est localisé dans les combles qu'une trentaine de minutes plus tard : la charpente en chêne, « la forêt », est déjà embrasée.","La flèche s'effondre dans la soirée. Les sapeurs-pompiers de Paris, environ 400 engagés, sauvent les tours et la structure."],
@@ -1757,6 +1807,18 @@ const MEMORIALS = {
       { q:"Qui a combattu l'incendie de Notre-Dame ?", o:["La Brigade de sapeurs-pompiers de Paris","Le SDIS 75","Le bataillon de marins-pompiers","La sécurité civile seule"], c:0, e:"À Paris, ce sont les sapeurs-pompiers de la BSPP, unité militaire." },
       { q:"À quoi sert une levée de doute ?", o:["Vérifier sur place la réalité du feu signalé par la détection","Couper l'alarme quand elle sonne","Prévenir les pompiers à coup sûr","Tester la détection chaque mois"], c:0, e:"On vérifie sur place, vite et au bon endroit, ce que la détection a signalé." } ] },
 };
+/* Lieux de mémoire posés automatiquement sur certaines routes, au bord du chemin */
+const ROUTE_MEMO = { r3:'galeries', r5:'azf', r6:'puisseguin', r11:'montblanc', r14:'bazar' };
+function memoSpot(L, id){
+  const t = L.t, H = t.length, W = L.W; const PATH = new Set(['_', 'R']); const used = new Set();
+  [...(L.npcs || []), ...(L.inc || []), ...(L.signs || []), ...(L.extraSigns || [])].forEach(p => p && used.add(p[0] + ',' + p[1]));
+  let best = null, bd = 1e9;
+  for (let y = 1; y < H - 1; y++) for (let x = Math.floor(W * .3); x < Math.ceil(W * .7); x++){
+    const c = t[y][x]; if (TOWN_BLOCK.has(c) || PATH.has(c) || used.has(x + ',' + y)) continue;
+    const nb = [[1,0],[-1,0],[0,1],[0,-1]].filter(([dx, dy]) => PATH.has(t[y+dy]?.[x+dx])).length; if (!nb) continue;
+    const d = Math.abs(x - W / 2) + Math.abs(y - H / 2) * .5; if (d < bd){ bd = d; best = [x, y]; } }
+  return best ? [best[0], best[1], 'x', id] : null;
+}
 const memoCount = () => Object.keys(MEMORIALS).filter(k => S.memos?.[k]).length;
 function memorial(id){
   if (id === 'nainville') return nainville();
@@ -1768,7 +1830,7 @@ function memorial(id){
     const list = a => `<ul style="margin:6px 0 12px;padding-left:20px;line-height:1.45">${a.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`;
     const sheet = () => {
       panel(`<button type="button" class="btn alt close" id="mmX">Fermer</button><div class="eyebrow">Lieu de mémoire · ${memoCount()} / ${Object.keys(MEMORIALS).length}</div><h2>${esc(m.name)}</h2>
-        <p class="lede">${esc(m.place)} · ${esc(m.date)} · ERP de type ${esc(m.type)}<br><strong>${esc(m.toll)}</strong></p>
+        <p class="lede">${esc(m.place)} · ${esc(m.date)} · ${/^[A-Z]{1,2}( · [A-Z]{1,2})*$/.test(m.type) ? 'ERP de type ' + esc(m.type) : esc(m.type)}<br><strong>${esc(m.toll)}</strong></p>
         <h3>Ce qui s'est passé</h3>${list(m.story)}<h3>Ce qui a aggravé le drame</h3>${list(m.factors)}<h3>Ce que ça a changé</h3>${list(m.changed)}
         <div class="note"><strong>Le réflexe du préventionniste.</strong> ${esc(m.reflex)}</div>
         <p style="font-size:13px;color:var(--steel)">Fiche rédigée à partir de sources publiques, à valider et compléter par le formateur.</p>
@@ -2017,7 +2079,7 @@ function classPanel(){
     $('#cpGo').onclick = go; $('#cpCode').onkeydown = e => { if (e.key === 'Enter') go(); }; setTimeout(() => $('#cpCode')?.focus(), 50); return;
   }
   const P = panel(`<button type="button" class="btn alt close" id="cpX">Fermer</button><div class="eyebrow">Partie privée · ${esc(S.classe)}</div><h2>${esc(CL.game?.title || 'Ma classe')}</h2>
-    <p class="lede">Formateur : ${esc(CL.game?.ownerName || '—')}.</p><div id="cpRank"><p class="lede">Chargement du classement…</p></div>
+    <p class="lede">Formateur : ${esc(CL.game?.ownerName || '—')}. Questions du stage : <b>${esc(stageLabel(CL.game))}</b>${CL.game?.prvSolo ? ', aussi dans tes combats solo' : ''}.</p><div id="cpRank"><p class="lede">Chargement du classement…</p></div>
     ${(S.classInbox || []).length ? `<h3>Conseils reçus</h3>${S.classInbox.map(m => `<div class="note">${esc(m.txt)}<br><span style="font-size:12px;color:var(--steel)">${new Date(m.t).toLocaleString('fr-FR', { weekday:'short', hour:'2-digit', minute:'2-digit' })}</span></div>`).join('')}` : ''}
     <div class="row" style="margin-top:12px"><button class="btn alt" type="button" id="cpLeave">Quitter la partie</button></div>`);
   $('#cpX').onclick = closePanel; $('#cpLeave').onclick = async () => { await classLeave(); classPanel(); };
@@ -2091,7 +2153,7 @@ async function teacherHome(){
 }
 function clPos(m){
   let id = m.map || 'town'; const x = m.x || 0, y = m.y || 0;
-  if (SITES[id]) id = SITES[id].exit.map; if (id === 'amphi') id = 'town'; if (id === 'em33') id = 'bordeaux'; if (id === 'garrigue') id = 'marseille'; if (id === 'oudine') id = 'paris';
+  if (SITES[id]) id = SITES[id].exit.map; if (id === 'amphi') id = 'town'; if (id === 'em33') id = 'bordeaux'; if (id === 'garrigue') id = 'marseille'; if (id === 'oudine') id = 'paris'; if (id === 'argentre' || id === 'argcaserne') id = 'nantes';
   const e = ETAPE[id]; if (e){ const L = LAYOUTS[id]; const p = proj(e.coord); return [p[0] + (x / (L?.W || 32) - .5) * 36, p[1] + (y / (L?.H || 24) - .5) * 36]; }
   const r = ROUTE[id]; if (r){ const a = proj(ETAPE[r.from].coord), b = proj(ETAPE[r.to].coord); const f = Math.max(0, Math.min(1, x / (r.W || 50))); return [a[0] + (b[0]-a[0])*f, a[1] + (b[1]-a[1])*f + (y / (r.layout?.t?.length || 18) - .5) * 14]; }
   return proj(ETAPE.town.coord);
@@ -2102,7 +2164,7 @@ function teacherDash(code){
   el.innerHTML = `<div class="tdwrap"><header class="tdhead"><div><div class="eyebrow">Mode formateur</div><h2 id="tdTitle">Partie ${esc(code)}</h2></div>
     <div class="tdcode">Code de la partie <b>${esc(code)}</b></div><button class="btn warn" type="button" id="tdQR">QR code</button><div class="tdstat" id="tdStat"></div><button class="btn alt" type="button" id="tdX">Quitter</button></header>
     <nav class="tdtabs" role="tablist">${[['carte','Carte et classement'],['quiz','Quiz en direct'],['equipes','Équipes, objectif, export'],['tournoi','Tournoi'],['regles','Projeter les règles'],['questions','Questions ratées'],['msg','Conseils']].map(([k, l]) => `<button type="button" role="tab" data-tab="${k}">${l}</button>`).join('')}</nav>
-    <main id="tdBody"></main></div>`;
+    <div class="tdstage" id="tdStage"></div><main id="tdBody"></main></div>`;
   openLayer(el);
   $('#tdX').onclick = teacherClose; $('#tdQR').onclick = () => qrPanel(code);
   el.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { TD.tab = b.dataset.tab; tdRender(true); });
@@ -2115,7 +2177,7 @@ function teacherClose(){ TD.unsubG?.(); TD.unsubM?.(); TD.unsubG = TD.unsubM = n
 function tdRender(full){
   const el = $('#teach'); if (!el || el.hidden) return;
   const g = TD.game, ms = TD.members.slice().sort((a, b) => b.xp - a.xp), on = ms.filter(clOnline);
-  if (g) $('#tdTitle').textContent = g.title;
+  if (g) $('#tdTitle').textContent = g.title; tdStageBar();
   $('#tdStat').innerHTML = `<b>${ms.length}</b> inscrit${ms.length > 1 ? 's' : ''} · <b>${on.length}</b> en ligne`;
   el.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === TD.tab)));
   const body = $('#tdBody');
@@ -2147,10 +2209,10 @@ function tdQuiz(body, full, on){
       <div class="chips">${THEMES.map((t, i) => QUESTIONS.some(q => q.t === i) ? `<button type="button" class="tchip" data-t="${i}" aria-pressed="${TD.sel.has(i)}">${esc(t)}</button>` : '').join('')}</div>
       <div class="row" style="margin-top:14px"><label>Questions <select id="tdN">${[5,10,15,20].map(n => `<option ${n === TD.n ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
       <label>Secondes <select id="tdS">${[15,20,30,45].map(n => `<option ${n === TD.secs ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
-      ${TD.game?.teams?.length ? `<label><input type="checkbox" id="tdTQ" ${TD.teamQ ? 'checked' : ''}> Par équipes</label>` : ''}<button class="btn warn" type="button" id="tdGo">Lancer le quiz</button></div><p class="lede" style="margin-top:8px">Sans thème choisi, les questions viennent de toute la banque.</p></div>`;
+      ${TD.game?.teams?.length ? `<label><input type="checkbox" id="tdTQ" ${TD.teamQ ? 'checked' : ''}> Par équipes</label>` : ''}<button class="btn warn" type="button" id="tdGo">Lancer le quiz</button></div><p class="lede" style="margin-top:8px">Sans thème choisi, les questions viennent de toute la banque du stage (${esc(stageLabel(TD.game))}).</p></div>`;
     body.querySelectorAll('.tchip').forEach(b => b.onclick = () => { const i = +b.dataset.t; TD.sel.has(i) ? TD.sel.delete(i) : TD.sel.add(i); b.setAttribute('aria-pressed', String(TD.sel.has(i))); });
     $('#tdN').onchange = e => TD.n = +e.target.value; if ($('#tdTQ')) $('#tdTQ').onchange = e => TD.teamQ = e.target.checked; $('#tdS').onchange = e => TD.secs = +e.target.value;
-    $('#tdGo').onclick = async () => { const pool = QUESTIONS.filter(q => q.o.length >= 2 && (!TD.sel.size || TD.sel.has(q.t)));
+    $('#tdGo').onclick = async () => { const pool = stageFilter(QUESTIONS.filter(q => q.o.length >= 2 && (!TD.sel.size || TD.sel.has(q.t))), TD.game, TD.n);
       const qs = shuffle(pool).slice(0, TD.n).map(q => q.i); if (!qs.length) return;
       await tdLive({ on:true, sid:Date.now().toString(36), qs, idx:0, phase:'q', secs:TD.secs, scores:{}, team:!!(TD.teamQ && TD.game?.teams?.length), startedAt:Date.now() }); };
     return;
@@ -2354,7 +2416,7 @@ async function duelInvite(p){
   if (NET.duel){ toast('Un duel est déjà en cours'); return; }
   const c = await choose(`${p.presence.n} (niv. ${p.presence.lv}). Le défier en duel ? 5 questions, 20 secondes chacune : le plus juste gagne, puis le plus rapide.`, ['Lancer le défi','Laisser tranquille'], 'Duel');
   if (c !== 0) return;
-  const qs = shuffle(QUESTIONS.filter(q => q.o.length >= 2)).slice(0, 5).map(q => q.i);
+  const qs = shuffle(stageFilter(QUESTIONS.filter(q => q.o.length >= 2), myStageGame(), 5)).slice(0, 5).map(q => q.i);
   const id = Date.now().toString(36); NET.duel = { id, to:p.peer, qs, me:'inv', name:p.presence.n, t:Date.now() };
   netPub({ duel:{ id, to:p.peer, qs, st:'inv' } }); toast('Défi envoyé', `En attente de ${p.presence.n}…`);
   setTimeout(() => { if (NET.duel?.id === id && NET.duel.me === 'inv'){ NET.duel = null; netPub({ duel:null }); toast('Pas de réponse', 'Le défi a expiré.'); } }, 30000);
@@ -2582,7 +2644,7 @@ function qDue(q){ const s = S.stats[q.i]; if (!s || !s.n) return 'new';
 function pickQuestions(themes, n){
   const ids = themes.map(TH).filter(i => i >= 0);
   const ofType = q => PICK_TYPE && q.s && q.s.endsWith('type ' + PICK_TYPE);
-  const pool = QUESTIONS.filter(q => ids.includes(q.t) || ofType(q));
+  const pool = stageSolo(QUESTIONS.filter(q => ids.includes(q.t) || ofType(q)), n * 2);
   const tgt = PICK_LV || targetLevel();
   const recent = new Set((S.recentQ || []).slice(-80));
   const tiers = [[], [], [], [], []];
@@ -2814,12 +2876,12 @@ function genSites(){
       const floors = (e.n >= 8 || nPts >= 8) && typeof siteRows2 === 'function' ? 2 : 1;
       const pe = e.n < 4; const points = Object.fromEntries(keys.map(k => { const P = LIB[k]; return [k, { titre:P.titre, ref:(pe && P.refPE) || P.ref, ok:{ obs:fillLieu(P.ok.obs, L), why:P.ok.why }, nc:{ obs:fillLieu(P.nc.obs, L), why:P.nc.why }, bad:fillLieu(P.bad, L), good:fillLieu(P.good, L) }]; }));
       const nFirst = Math.min(keys.length - 1, 2 + Math.floor(e.n / 5)); const first = keys.slice().sort(() => r() - .5).slice(0, nFirst);
-      const name = String(b.label).replace(/\s*·.*$/, '').toLowerCase().replace(/(^|\s|-|')\S/g, s => s.toUpperCase());
+      const name = b.siteName || String(b.label).replace(/\s*·.*$/, '').toLowerCase().replace(/(^|\s|-|')\S/g, s => s.toUpperCase()).replace(/ (De|Du|Des|La|Le) /g, s => s.toLowerCase());
       const p = genPerson(1000 + e.n*10 + b.x); const did = 'dirsite_' + id; PAL[did] = p.pal;
       const th = (DIRECTOR_THEMES[type] || ['Dégagements','Moyens de secours']).filter(t => THEMES.includes(t));
       NPCS[did] = { name:`${['M.','Mme'][Math.floor(r()*2)]} ${p.last}`, role:`Exploitant · ${name} · ${e.name}`, pal:did, site:id, themes:th.length ? th : ['Dégagements'], hp:3 + Math.floor(e.n/4), xp:30 + 4*e.n,
         intro:"Des prescriptions ? Prouvez-moi d'abord que vous connaissez vos textes !", taunts:["C'est provisoire.","On a toujours fait comme ça.","Vous êtes sûr de l'article ?"], win:"Bien. Je lève les non-conformités.", lose:"Je contesterai votre rapport." };
-      SITES[id] = { name:`${name} (${e.name})`, short:name, type, cat:['5e','4e','3e','2e'][Math.min(3, Math.floor(e.n/4))] + ' catégorie', director:did, points, bid:id,
+      SITES[id] = { name:`${name} (${e.name})`, short:name, type, cat:b.cat || ['5e','4e','3e','2e'][Math.min(3, Math.floor(e.n/4))] + ' catégorie', mythique:!!b.landmark, director:did, points, bid:id,
         exit:{ map:e.id, x:b.door[0], y:b.door[1] + 1, f:'down' }, spawn:[8, 9, 'up'], first, epi:keys.slice().reverse(),
         fireTime:['Lundi, 21 h 10','Mercredi, 14 h 30','Vendredi, 23 h 45','Samedi, 11 h 05'][Math.floor(r()*4)], fireTitle:`Départ de feu · ${name}`,
         fireStart:fillLieu('Un départ de feu se produit dans {local}.', L),
@@ -3094,7 +3156,7 @@ function classPanel(tab){
   if (!S.classe) return classJoinPanel();
   CP_TAB = tab || CP_TAB; const g = CL.game || {}; const pend = defisPourMoi().length;
   const tabs = [['rang','Classement'],['ligne','En ligne'],['defis',`Défis${pend ? ` (${pend})` : ''}`],['objectif','Objectif'],['conseils','Conseils']];
-  const P = panel(`<button type="button" class="btn alt close" id="cpX">Fermer</button><div class="eyebrow">Partie privée · ${esc(S.classe)} · formateur : ${esc(g.ownerName || '—')}</div><h2>${esc(g.title || 'Ma classe')}</h2>
+  const P = panel(`<button type="button" class="btn alt close" id="cpX">Fermer</button><div class="eyebrow">Partie privée · ${esc(S.classe)} · formateur : ${esc(g.ownerName || '—')}</div><h2>${esc(g.title || 'Ma classe')}</h2><p class="lede">Questions du stage : <b>${esc(stageLabel(g))}</b>${g.prvSolo ? ', aussi dans tes combats solo' : ''}.</p>
     <nav class="tdtabs" style="margin:8px 0 12px">${tabs.map(([k, l]) => `<button type="button" data-cp="${k}" aria-selected="${k === CP_TAB}">${l}</button>`).join('')}</nav><div id="cpBody"><p class="lede">Chargement…</p></div>
     <div class="row" style="margin-top:12px"><button class="btn alt" type="button" id="cpLeave">Quitter la partie</button></div>`);
   $('#cpX').onclick = closePanel; $('#cpLeave').onclick = async () => { await classLeave(); classPanel(); };
@@ -3174,7 +3236,7 @@ async function defiRun(qs, name){
 }
 async function defiCreate(m){
   if (!m || !cloud.db) return; closePanel();
-  const qs = shuffle(QUESTIONS.filter(q => q.o.length >= 2 && qLevel(q) <= Math.max(targetLevel(), 2))).slice(0, 5);
+  const qs = shuffle(stageFilter(QUESTIONS.filter(q => q.o.length >= 2 && qLevel(q) <= Math.max(targetLevel(), 2)), myStageGame(), 5)).slice(0, 5);
   const ok = await choose(`Défier ${m.pseudo} ? Tu réponds maintenant à 5 questions (20 secondes chacune). ${m.pseudo} jouera les mêmes questions à son retour.`, ['Jouer mon défi','Annuler'], 'Défi');
   if (ok !== 0) return;
   const a = await defiRun(qs, `Défi contre ${m.pseudo}`);
@@ -3441,7 +3503,7 @@ function tdTournament(body, full){
       return `<div class="bmatch"><div class="${m.w === m.a ? 'win' : ''}">${esc(name(m.a))}<b>${ra ? ra.sc + '/5' : ''}</b></div><div class="${m.w && m.w === m.b ? 'win' : ''}">${m.b ? esc(name(m.b)) : '<em>exempt</em>'}<b>${rb ? rb.sc + '/5' : ''}</b></div></div>`; }).join('')}</div>`).join('')}</div>
     <p class="lede" style="margin-top:10px">${T.phase === 'ready' ? 'Prêt : lance le tour quand tout le monde regarde.' : `${done} match${done > 1 ? 's' : ''} terminé${done > 1 ? 's' : ''} sur ${R.length}.`}</p>
     <div class="row">${T.phase === 'ready' ? '<button class="btn warn" type="button" id="tnGo">Lancer le tour</button>' : '<button class="btn" type="button" id="tnNext">Clore le tour et qualifier</button>'}<button class="btn alt" type="button" id="tnStop">Arrêter le tournoi</button></div></div>`;
-  if ($('#tnGo')) $('#tnGo').onclick = () => { const qs = shuffle(QUESTIONS.filter(q => q.o.length >= 2 && qLevel(q) <= T.lv)).slice(0, 5).map(q => q.i); upd({ ...T, phase:'play', qs, startedAt:Date.now() }); };
+  if ($('#tnGo')) $('#tnGo').onclick = () => { const base = stageFilter(QUESTIONS.filter(q => q.o.length >= 2), TD.game, 5); const lvq = base.filter(q => qLevel(q) <= T.lv); const qs = shuffle(lvq.length >= 5 ? lvq : base).slice(0, 5).map(q => q.i); upd({ ...T, phase:'play', qs, startedAt:Date.now() }); };
   if ($('#tnNext')) $('#tnNext').onclick = () => {
     const closed = R.map(m => { const ra = resOf(m.a, T), rb = m.b ? resOf(m.b, T) : null; let w;
       if (!m.b) w = m.a; else if (ra && !rb) w = m.a; else if (rb && !ra) w = m.b; else if (!ra && !rb) w = Math.random() < .5 ? m.a : m.b;
@@ -5034,7 +5096,7 @@ async function megafeuTalk(){
 MEDALS.push(['megafeu', 'Mégafeu de Gironde', 'Traiter les reprises du mégafeu de juillet 2026, route des Vignobles', 'o', s => s.megafeu?.st === 'done']);
 
 /* ================= v19 : RETOURS DES TESTEURS · EFFETS ET SENSATIONS ================= */
-const GAME_VER = 'v0.26';
+const GAME_VER = 'v0.27';
 const reduceMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
 const buzz = p => { try { if (S?.vibe !== false && navigator.vibrate) navigator.vibrate(p); } catch(e){} };
 
@@ -5627,7 +5689,7 @@ function siteStairs(sc){
 function siteReq(id){
   const s = SITES[id]; if (!s) return 1; if (s.req) return s.req;
   const e = ETAPES.find(x => x.id === s.exit?.map); if (!e || e.n < 2) return 1;
-  const big = /^[23]e/.test(s.cat || ''); return e.n + (e.n <= 5 ? 2 : e.n <= 10 ? 3 : 4) + (big ? 1 : 0);
+  const big = /^(1re|[23]e)/.test(s.cat || ''); return e.n + (e.n <= 5 ? 2 : e.n <= 10 ? 3 : 4) + (big ? 1 : 0);
 }
 const curLevel = () => levelOf(S.xp).L;
 function xpToLevel(L){ let x = 0; for (let l = 1; l < L; l++) x += stepCost(l); return Math.max(0, x - S.xp); }
@@ -5732,6 +5794,7 @@ const GUIDES = [
   ['cad_4', 'Ltn Roux', 'Jouer avec sa classe', [
     ["Comment rejoindre ma classe ?", ["Scanne le QR code du formateur, ou entre son code dans Menu → Ma classe."]],
     ["Et les duels ?", ["Approche-toi d'un collègue sur la carte et défie-le : mêmes questions, même chrono.", "Le gagnant prend 60 XP et 10 crédits, le perdant 15 XP de participation."]],
+    ["Et les questions du stage ?", ["Ton formateur choisit les questions de son stage : PRV1, PRV2 ou RCCI.", "Elles servent aux quiz en direct, aux tournois, aux défis et aux duels, et parfois aussi à tes combats solo. Regarde dans Menu → Ma classe."]],
     ["Le défi de la semaine ?", ["Dix questions, les mêmes pour tout le monde, nouveau chaque lundi. Le classement est commun."]],
   ]],
   ['cad_5', 'Cne Petitjean', 'Objets, quêtes et médailles', [
@@ -6059,6 +6122,150 @@ function credAfter(cfg, me, good){
 }
 document.addEventListener('click', e => { if (e.target.closest?.('#hCred')) credRevision(); });
 
+/* ================= v27 : QUESTIONS DU STAGE (PRV1 / PRV2 / RCCI) =================
+   Le formateur choisit les questions de son stage. Elles servent aux quiz en direct, tournois, défis et duels,
+   et, s'il le veut, aux combats solo de ses stagiaires. */
+const STAGES = [['PRV1', 'PRV1', 'Agent de prévention'], ['PRV2', 'PRV2', 'Préventionniste'], ['RCCI', 'RCCI', 'Recherche des causes (NFPA 921)']];
+function qStage(q){
+  const id = String(q.i || ''), s = String(q.s || '');
+  if (/^NF/.test(id) || /NFPA|RCCI/.test(s)) return 'RCCI';
+  if (q.stage) return q.stage;
+  if (/^PRV1/.test(id) || /Découverte|5e catégorie|PRV1/.test(s)) return 'PRV1';
+  if (/^RG/.test(id) && q.lv === 1) return 'PRV1';
+  return 'PRV2';
+}
+const stageOf = g => (g && Array.isArray(g.prv) && g.prv.length && g.prv.length < STAGES.length) ? g.prv : null;
+/* Filtre une liste de questions selon le stage ; si le filtre vide la liste, on garde l'original */
+function stageFilter(list, g, min = 1){
+  const st = stageOf(g); if (!st) return list;
+  const f = list.filter(q => st.includes(qStage(q))); return f.length >= min ? f : list;
+}
+const myStageGame = () => (typeof CL !== 'undefined' && CL.game) || null;
+function stageSolo(list, n){ const g = myStageGame(); return g?.prvSolo ? stageFilter(list, g, Math.max(n || 1, 1)) : list; }
+function stageLabel(g){ const st = stageOf(g); return st ? st.join(' + ') : 'Toute la banque'; }
+function stageCounts(){ const n = { PRV1:0, PRV2:0, RCCI:0 }; QUESTIONS.forEach(q => { if (q.o?.length >= 2) n[qStage(q)]++; }); return n; }
+/* Barre de réglage dans le tableau de bord formateur */
+function tdStageBar(){
+  const el = $('#tdStage'); if (!el) return; const g = TD.game || {}; const sel = Array.isArray(g.prv) && g.prv.length ? g.prv : STAGES.map(s => s[0]);
+  const key = JSON.stringify([sel, !!g.prvSolo]); if (el.dataset.k === key) return; el.dataset.k = key; const n = stageCounts();
+  el.innerHTML = `<span class="tdsl">Questions du stage</span>${STAGES.map(([k, l, d]) => `<button type="button" class="tchip" data-st="${k}" aria-pressed="${sel.includes(k)}" title="${esc(d)}">${l} <small>${n[k]}</small></button>`).join('')}
+    <label class="tdsolo"><input type="checkbox" id="tdSolo" ${g.prvSolo ? 'checked' : ''}> aussi dans les combats solo</label>`;
+  el.querySelectorAll('[data-st]').forEach(b => b.onclick = async () => {
+    const k = b.dataset.st; let nx = sel.includes(k) ? sel.filter(x => x !== k) : [...sel, k];
+    if (!nx.length){ toast('Garde au moins un type de questions'); return; }
+    nx = STAGES.map(s => s[0]).filter(x => nx.includes(x)); await tdStageSave({ prv:nx });
+  });
+  $('#tdSolo').onchange = e => tdStageSave({ prvSolo:e.target.checked });
+}
+async function tdStageSave(patch){
+  try { await cloud.db.doc('games/' + TD.code).update(patch); TD.game = { ...(TD.game || {}), ...patch }; tdStageBar(); tdRender(true); toast('Questions du stage', stageLabel(TD.game) + (TD.game.prvSolo ? ' · aussi en solo' : '')); }
+  catch(e){ toast('Réglage non enregistré', 'Vérifie la connexion.'); }
+}
+
+/* ================= v28 : COMMISSIONS DANS LES LIEUX MYTHIQUES =================
+   Stades, cathédrales, basiliques, théâtres, châteaux-musées : les monuments des villes deviennent des
+   établissements à visiter, avec des points propres aux types PA, V et Y. */
+
+/* ---- Tuiles ---- */
+TILE_DRAW.candles = function(c){ TILE_DRAW.floor(c); TD_(c,'#5d6c84',2,9,12,5); TD_(c,'#2b3140',2,14,12,1);
+  for (const x of [4,7,10]) { TD_(c,'#f3efe8',x,5,2,4); TD_(c,'#ff9a1a',x,3,2,2); TD_(c,'#ffe08a',x,2,1,1); } };
+TILE_DRAW.candlesnear = function(c){ TILE_DRAW.candles(c); TD_(c,'#8a1424',0,0,4,16); TD_(c,'#a8162b',1,0,2,16); TD_(c,'#ff6a1a',3,3,2,2); };
+TILE_DRAW.radiant = function(c){ TILE_DRAW.wall(c); TD_(c,'#161a24',3,1,10,4); TD_(c,'#c8102e',4,2,8,2); TD_(c,'#e9e4dc',7,5,2,10); };
+TILE_DRAW.radiantlow = function(c){ TILE_DRAW.wall(c); TD_(c,'#e9e4dc',7,1,2,8); TD_(c,'#161a24',3,9,10,4); TD_(c,'#ff3a1a',4,10,8,2); TD_(c,'#ff9a1a',5,13,6,1); };
+TILE_DRAW.gate = function(c){ TILE_DRAW.floor(c); TD_(c,'#2e9e5b',0,13,16,3); TD_(c,'#5d6c84',1,2,14,11); for (let x = 2; x < 15; x += 3) TD_(c,'#2b3140',x,3,1,10);
+  TD_(c,'#f5c518',12,6,3,3); TD_(c,'#161a24',13,7,1,1); };
+TILE_DRAW.gatelocked = function(c){ TILE_DRAW.gate(c); TD_(c,'#161a24',6,6,4,4); TD_(c,'#8f99aa',7,4,2,3); TD_(c,'#c8102e',12,6,3,3); };
+TILE_DRAW.vitrine = function(c){ TILE_DRAW.floor(c); TD_(c,'#161a24',1,3,14,11); TD_(c,'#cfe7f2',2,4,12,6); TD_(c,'#d9b44a',6,6,4,3); TD_(c,'#5a3a22',2,10,12,3); };
+TILE_DRAW.vitrinecandle = function(c){ TILE_DRAW.vitrine(c); TD_(c,'#d9b44a',12,0,2,4); TD_(c,'#ff9a1a',12,0,2,1); TD_(c,'#f3efe8',2,0,2,3); TD_(c,'#ff9a1a',2,0,2,1); };
+Object.assign(FURN, { PA:'y', V:'y', Y:'S' });
+
+/* ---- Points de visite ---- */
+Object.assign(TYPE_LIBS, {
+  PA:{ furn:'y', order:['p','R','G','U','l','b','e','B'], lib:{
+    p:PT_('Sorties du stade', 'Art. PA 7 § 5 : sorties à 1 UP pour 300 personnes, judicieusement réparties', ['exitzone','pallets'],
+      "Les grilles de sortie sont grandes ouvertes à la fin du match, et le flux se répartit sur toutes les portes.", "Sorties dimensionnées et réparties (PA 7 § 5) : conforme.",
+      "Des barrières de filtrage ont été laissées en travers d'une sortie, il ne reste qu'un passage d'une personne.", "Les sorties vers la voie publique ont une largeur calculée à 1 UP pour 300 personnes ; au-delà de 3 000 personnes, une sortie de plus par tranche de 3 000 (PA 7 § 5).",
+      "À la fin du match, la foule s'écrase contre les barrières.", "Les sorties libres vident les tribunes sans bousculade."),
+    R:PT_('Rangées de sièges des tribunes', 'Art. PA 9 § 3 : 40 places au plus entre deux circulations, 20 entre une circulation et une paroi', ['seats','seatsblock'],
+      "Sièges fixés, 36 places entre deux escaliers de desserte, espace libre entre rangées respecté.", "Rangées conformes (PA 9 § 3) : conforme.",
+      "Des sièges ont été ajoutés en bout de rangée, contre la rambarde : 46 places d'affilée.", "Chaque rangée compte au plus 40 places entre deux circulations ou 20 entre une circulation et une paroi, avec 0,35 m libre entre rangées (PA 9 § 3).",
+      "Au milieu de la rangée trop longue, les spectateurs mettent de longues minutes à sortir.", "Les rangées courtes rejoignent vite les escaliers."),
+    G:PT_("Portes d'accès à l'aire de jeu", "Art. PA 8 § 2 : portes vers l'aire de jeu, ouverture sous la garde permanente d'un préposé", ['gate','gatelocked'],
+      "Chaque secteur dispose d'une porte vers la pelouse ; un stadier garde la clé au pied de chaque porte.", "Évacuation exceptionnelle vers l'aire de jeu possible (PA 8 § 2) : conforme.",
+      "La porte de la tribune vers la pelouse est cadenassée, et aucun stadier n'est en poste.", "Pour une évacuation exceptionnelle vers l'aire de jeu, des portes desservent tous les secteurs ; leur ouverture reste en permanence sous la garde d'un préposé (PA 8 § 2).",
+      "Pris dans un mouvement de foule, les spectateurs du bas de tribune n'ont aucune échappatoire.", "La porte gardée s'ouvre en quelques secondes : le bas de tribune se déverse sur la pelouse."),
+    U:PT_('Dessous des tribunes', 'Art. PA 5 § 3 : dessous inaccessibles au public, ni rangement ni stockage, toujours propres', ['carts','cartsblock'],
+      "Le dessous de la tribune est fermé, vide et balayé.", "Dessous des gradins dégagés (PA 5 § 3) : conforme.",
+      "Sous la tribune : des cartons de gobelets, des drapeaux et des palettes, stockés « en attendant ».", "Les dessous des tribunes sont rendus inaccessibles au public ; ils ne servent ni de rangement ni de dépôt et restent propres en permanence (PA 5 § 3).",
+      "Un fumigène tombé entre les gradins enflamme les cartons stockés dessous.", "Rien sous les gradins : le fumigène s'éteint tout seul sur le béton."),
+    l:PT_('Local à risques sous la tribune', 'Art. PA 6 § 2 : parois CF 1 h, porte PF 1/2 h avec ferme-porte', ['cfclosed','cfdoor'],
+      "La porte du local de stockage du matériel se referme seule derrière l'agent.", "Local à risques isolé (PA 6 § 2) : conforme.",
+      "La porte du local de stockage est bloquée ouverte par un extincteur, pour aller plus vite.", "Les locaux à risques particuliers sont isolés par des parois CF 1 h et des portes PF 1/2 h munies de ferme-porte (PA 6 § 2).",
+      "Le feu du local se propage dans la coursive des spectateurs.", "La porte fermée contient le feu le temps d'évacuer la coursive."),
+    b:PT_("Éclairage d'évacuation", 'Art. PA 11 § 2 : en nocturne, éclairage de sécurité jusqu\'aux sorties', ['baes','baesposter'],
+      "Pour les matchs en nocturne, les blocs balisent les vomitoires jusqu'aux sorties.", "Éclairage d'évacuation en place (PA 11 § 2) : conforme.",
+      "Une affiche du prochain concert masque le bloc au-dessus du vomitoire.", "S'il existe un éclairage normal, un éclairage de sécurité limité à l'évacuation permet d'atteindre les sorties (PA 11 § 2).",
+      "Coupure générale pendant le match du soir : les supporters cherchent la sortie à tâtons.", "Les blocs guident la tribune vers les vomitoires malgré la coupure."),
+  } },
+  V:{ furn:'y', order:['p','c','R','A','H','e','b','B'], lib:{
+    c:PT_('Cierges et luminaires à flamme nue', 'Art. V 9 : flammes nues éloignées de toute matière inflammable, sans risque en cas de chute', ['candles','candlesnear'],
+      "Le présentoir de cierges est posé sur un socle métallique, loin des tentures.", "Flammes nues éloignées des matières inflammables (V 9) : conforme.",
+      "Le présentoir de cierges a été déplacé contre une tenture de velours, pour une cérémonie.", "Les appareils à flamme nue (cierges, candélabres) sont éloignés de toute matière inflammable et disposés de façon à ne pas provoquer d'incendie, même s'ils tombent (V 9).",
+      "Une flamme lèche la tenture, qui s'embrase jusqu'à la tribune d'orgue.", "Loin des tentures, un cierge renversé s'éteint sur le dallage."),
+    R:PT_('Chaises de la nef', 'Art. V 5 : espace suffisant entre rangées, chaises solidarisées par rangée', ['seats','seatsblock'],
+      "Les chaises de la nef sont reliées par rangée, l'allée centrale est dégagée.", "Chaises solidarisées, allées libres (V 5) : conforme.",
+      "Pour la messe de minuit, des chaises volantes non reliées ont été ajoutées dans l'allée centrale.", "Un espace suffisant est laissé entre les rangées, et les sièges sont solidarisés par rangée pour ne pas se renverser (V 5).",
+      "Dans la bousculade, les chaises renversées font chuter les fidèles dans l'allée.", "Les rangées solidaires ne bougent pas : l'allée reste praticable."),
+    A:PT_("Équipement d'alarme", "Art. V 12 : équipement d'alarme de type 4", ['alarm','alarmhidden'],
+      "Le bouton d'alarme de la sacristie est accessible et signalé ; essai noté au registre.", "Alarme type 4 en place (V 12) : conforme.",
+      "L'équipement d'alarme est caché derrière une pile de chaises et de bannières.", "Tous les établissements de culte sont dotés d'un équipement d'alarme de type 4 (V 12).",
+      "Le sacristain met de longues minutes à donner l'alerte.", "L'alarme donnée tout de suite, la nef se vide calmement."),
+    H:PT_('Chauffage par panneaux radiants', 'Art. V 7 : panneaux radiants et cassettes à plus de 3 m du niveau accessible au public', ['radiant','radiantlow'],
+      "Les panneaux radiants sont fixés haut sous les voûtes, bien au-dessus des fidèles.", "Appareils de chauffage à plus de 3 m (V 7 § 1) : conforme.",
+      "Un panneau radiant d'appoint a été posé à hauteur d'homme, à côté d'un banc.", "Les panneaux radiants et les cassettes électriques de plus de 100 °C sont placés à plus de 3 m du niveau le plus haut accessible au public (V 7 § 1).",
+      "Un manteau posé contre le panneau radiant prend feu.", "Chauffage hors d'atteinte : rien ne peut s'y appuyer."),
+  } },
+  Y:{ furn:'S', order:['p','r','f','d','A','e','b','B'], lib:{
+    r:PT_("Réserve des œuvres", 'Art. Y 8 et CO 28 : réserve d\'œuvres = local à risques importants, isolé, porte à ferme-porte', ['cfclosed','cfdoor'],
+      "La porte coupe-feu de la réserve se referme seule ; à l'intérieur, les caisses sont rangées.", "Réserve isolée comme local à risques importants (Y 8) : conforme.",
+      "La porte de la réserve est calée ouverte : on déménage des toiles pour la prochaine exposition.", "Les réserves d'œuvres, ateliers de restauration et archives sont des locaux à risques importants, isolés avec des portes à ferme-porte (Y 8, CO 28).",
+      "Le feu de la réserve gagne les salles d'exposition.", "La réserve fermée protège les collections et les visiteurs."),
+    f:PT_('Flammes nues', 'Art. Y 12 : flammes nues interdites dans les salles d\'exposition', ['vitrine','vitrinecandle'],
+      "Les candélabres de la salle d'apparat sont équipés d'ampoules.", "Aucune flamme nue dans les salles (Y 12) : conforme.",
+      "Pour une soirée privée, de vraies bougies ont été allumées sur les candélabres de la galerie.", "Chandelles, bougies et feux de Bengale sont interdits dans les salles d'exposition et les locaux accessibles au public (Y 12).",
+      "Une bougie tombe sur une tapisserie ancienne.", "Sans flamme nue, la soirée se passe sans risque pour les œuvres."),
+    d:PT_('Locaux non accessibles au public', 'Art. Y 7 : isolement CF 1/2 h, portes PF 1/2 h munies de ferme-porte', ['roomdoor','roomdoorwedge'],
+      "La porte du bureau de la conservation, qui donne sur la galerie, se referme seule.", "Isolement des locaux non accessibles au public (Y 7) : conforme.",
+      "La porte du bureau de la conservation est bloquée par une cale en bois.", "Les locaux et dégagements accessibles au public sont isolés des locaux non accessibles par des parois et portes CF/PF 1/2 h munies de ferme-porte (Y 7).",
+      "La fumée du bureau envahit la galerie par la porte calée.", "La porte refermée garde la galerie libre de fumée."),
+    e:PT_('Extincteurs', 'Art. Y 18 § 1 : extincteurs à eau pulvérisée de 6 L, 1 pour 200 m² et par niveau', ['ext','extempty'],
+      "Un extincteur à eau pulvérisée de 6 litres dans chaque salle, vérifié cette année.", "Moyens d'extinction répartis (Y 18) : conforme.",
+      "Le support d'extincteur de la grande galerie est vide : l'appareil est parti en vérification.", "La défense incendie est assurée par des extincteurs à eau pulvérisée de 6 litres au moins, un pour 200 m² et par niveau, plus des appareils adaptés aux risques particuliers (Y 18).",
+      "Personne ne trouve d'extincteur pour éteindre le début de feu.", "L'agent attaque le feu naissant en quelques secondes."),
+  } },
+});
+
+/* ---- Les monuments ouverts aux commissions ---- */
+const LM_ERP = {
+  velodrome:['STADE VÉLODROME', 'PA', '1re catégorie'],
+  ndGarde:['NOTRE-DAME-DE-LA-GARDE', 'V', '2e catégorie', 'Notre-Dame-de-la-Garde'],
+  palace:['PALACE DE LA PROMENADE', 'O', '2e catégorie', 'Palace de la Promenade'],
+  opera:['OPÉRA COMÉDIE', 'L', '2e catégorie'],
+  capitole:['THÉÂTRE DU CAPITOLE', 'L', '2e catégorie'],
+  grandTheatre:['GRAND-THÉÂTRE', 'L', '2e catégorie', 'Grand-Théâtre'],
+  chateauDucs:['CHÂTEAU DES DUCS', 'Y', '2e catégorie'],
+  cathedraleRouen:['CATHÉDRALE NOTRE-DAME', 'V', '1re catégorie', 'Cathédrale Notre-Dame'],
+  cathedraleStrasbourg:['CATHÉDRALE NOTRE-DAME', 'V', '1re catégorie', 'Cathédrale Notre-Dame'],
+  fourviere:['BASILIQUE DE FOURVIÈRE', 'V', '2e catégorie'],
+  chateauFontainebleau:['CHÂTEAU DE FONTAINEBLEAU', 'Y', '1re catégorie'],
+  sacreCoeur:['BASILIQUE DU SACRÉ-CŒUR', 'V', '1re catégorie', 'Basilique du Sacré-Cœur'],
+};
+/* Petite porte dessinée au pied des monuments visitables */
+function lmDoor(c, b, H){
+  const x = (b.door[0] - b.x) * 16; R_(c, '#161a24', x + 2, H - 14, 12, 14); R_(c, '#5a3a22', x + 3, H - 13, 10, 13);
+  R_(c, '#f5c518', x + 10, H - 7, 2, 2); R_(c, '#f5c518', x + 2, H - 17, 12, 3); R_(c, '#161a24', x + 2, H - 17, 12, 1);
+}
+
 const IN_TILE_BASE = { '#':'wall', '.':'floor', 'c':'boxes', 'X':'exitdoor', 'S':'shelf', 'R':'fridge', 'K':'counter', 'g':'ext', 'D':'mat' };
 const IN_BLOCK = new Set('#cFXpSRKBQegbn');
 const TEX = {};
@@ -6077,7 +6284,7 @@ function makeTextures(){
 const B = (id, x, y, w, h, roof, wall, door, label, extra) => ({ id, x, y, w, h, roof, wall, door, label, ...extra });
 const P_ = (label, msg, style) => ({ bld:[label, msg], style });
 const ETAPES = [
-  { id:'town', name:'ENSOSP', short:'ENSOSP', sdis:'ENSOSP', type:'campus · M · R', desc:"l'École nationale supérieure des officiers de sapeurs-pompiers, à Aix-en-Provence : ta ville de départ", coord:[5.37,43.50], W:44, main:20, boss:'moreau', badge:'classement', themes:['Classement des ERP','Responsabilités & commissions'] },
+  { id:'town', name:'ENSOSP', short:'ENSOSP', sdis:'ENSOSP', type:'campus · M · R', desc:"l'École nationale supérieure des officiers de sapeurs-pompiers, à Aix-en-Provence : ta ville de départ", coord:[5.37,44.10], W:44, main:20, boss:'moreau', badge:'classement', themes:['Classement des ERP','Responsabilités & commissions'] },
   { id:'nice', name:'Nice', short:'Nice', sdis:'SDIS 06', type:'O · P', desc:'baie des Anges, palaces, Promenade', coord:[7.26,43.70], W:54, H:34, style:'provencal', ground:'grass', sea:9, chairs:true, hr:[8,15], main:15, vr:[13,27,41],
     themes:['Locaux à sommeil','Implantation & accès','Petits établissements'], extra:['organisatrice'],
     blocks:{ '0,0':'park', '1,0':{ lm:'palace', name:'PALACE DE LA PROMENADE', msg:"Un palace Belle Époque à coupole rose. Hôtel de type O : locaux à sommeil, la nuit tout se joue sur l'alarme et l'évacuation." },
@@ -6316,7 +6523,7 @@ function cityLayout(e){
     if (k.miroir){ inner('m'); if (k.msg){ t[y0][x0] = 's'; signs[`${x0},${y0}`] = k.msg; } return; }
     if (k.port){ inner('w'); for (let x=ix+1;x<x1-1;x+=3) t[iy+1][x] = 'o'; t[y0][x0] = 's'; signs[`${x0},${y0}`] = "Le Vieux-Port : pointus, voiliers et quais animés. Un feu de bateau à quai menace vite les voisins."; return; }
     const doorAt = (bx0, bw0) => { const d = [bx0 + Math.floor(bw0/2), iy + ih - 1]; doorFront.add(`${d[0]},${d[1]+1}`); doorFront.add(`${d[0]-1},${d[1]+1}`); doorFront.add(`${d[0]+1},${d[1]+1}`); return d; };
-    if (k.lm){ inner('p'); buildings.push({ id:`${e.id}_${k.lm}`, x:ix, y:iy, w:iw, h:ih, landmark:k.lm, label:k.name, msg:k.msg, memo:k.memo }); return; }
+    if (k.lm){ inner('p'); const lz = LM_ERP[k.lm]; buildings.push({ id:`${e.id}_${k.lm}`, x:ix, y:iy, w:iw, h:ih, landmark:k.lm, label:lz ? `${lz[0]} · TYPE ${lz[1]}` : k.name, msg:lz ? k.msg + ' Visite à venir.' : k.msg, memo:k.memo, ...(lz ? { door:doorAt(ix, iw), locked:true, cat:lz[2], siteName:lz[3], band:'#f5c518' } : {}) }); return; }
     if (k.door){ buildings.push({ id:k.door, x:ix, y:iy, w:iw, h:ih, style:k.style || e.style, door:doorAt(ix, iw), label:k.name, band:'#14203a', ...(k.door2 ? { door2:[ix + iw - 1, iy], door2id:k.door2 } : {}) }); return; }
     if (k.em){ buildings.push({ id:`${e.id}_em`, x:ix, y:iy, w:iw, h:ih, style:k.style || e.style, door:doorAt(ix, iw), label:k.name, band:'#c8102e' }); return; }
     if (k.exam){ buildings.push({ id:`${e.id}_exam`, x:ix, y:iy, w:iw, h:ih, roof:'#8a1424', wall:'#e9e4dc', band:'#c8102e', garage:iw >= 7, door:doorAt(ix, iw), doorCol:'#c8102e', label:`CASERNE · ${e.sdis}`, exam:e.id }); return; }
@@ -6446,6 +6653,7 @@ for (const r of ROUTES){ const L = r.layout, from = ETAPE[r.from], to = ETAPE[r.
   for (const [x,y,txt] of (L.extraSigns || [])){ t[y][x] = 's'; signs[x+','+y] = txt; }
   L.npcs.forEach(([x,y]) => { if (TOWN_BLOCK.has(t[y][x])) t[y][x] = t[y][x] === 'Y' ? ';' : '.'; });
   L.inc.forEach(([x,y]) => { if (t[y][x] === 'T' || t[y][x] === 'k' || t[y][x] === 'v' || t[y][x] === 'q') t[y][x] = L.t[0][0] === 'q' ? ':' : '.'; });
+  if (!L.memo && ROUTE_MEMO[r.id]) L.memo = memoSpot(L, ROUTE_MEMO[r.id]);
   L.memos = {}; if (L.memo){ const [mx,my,mc,mid] = L.memo; t[my][mx] = mc; L.memos[`${mx},${my}`] = mid; }
   L.exitsFinal = ex; L.signsFinal = signs;
 }
