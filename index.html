@@ -338,6 +338,7 @@ code{font-family:var(--f-disp);background:#e8edf3;color:var(--ink);padding:0 4px
 .teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.team{border:3px solid var(--tc);border-radius:8px;padding:8px 10px;background:#fff;display:flex;flex-direction:column}.team span{font-size:13px;color:var(--steel)}.tdot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}.gbar{height:18px;background:#e3e7ec;border:2px solid var(--ink);border-radius:9px;overflow:hidden}.gbar i{display:block;height:100%;background:linear-gradient(90deg,#f5c518,#c8102e)}#teach select,#teach input,#panel select{background:#fff;color:#14203a;border:2px solid #14203a;border-radius:6px;padding:4px 6px;font:inherit;color-scheme:light}
 .mdls{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.mdl{display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;border:3px solid var(--mc);border-radius:10px;padding:10px 8px;background:#fff;color:var(--ink)}.mdl .disc{width:38px;height:38px;border-radius:50%;background:var(--mc);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;border:2px solid #14203a}.mdl b{font-size:13.5px}.mdl span{font-size:12px;color:var(--steel)}.mdl .disc{font-size:22px;color:#fff}.mdl em{font-size:11px;font-style:normal;color:var(--mc);font-weight:700}.mdl.off{opacity:.55;border-style:dashed}.mdl.off .disc{background:#d5dae1;color:#5d6c84}.bracket{display:flex;gap:16px;overflow-x:auto;padding:8px 0}.bcol{display:flex;flex-direction:column;justify-content:space-around;gap:12px;min-width:200px}.bhead{font-family:var(--f-disp);text-align:center}.bmatch{border:2px solid var(--ink);border-radius:8px;background:#fff;overflow:hidden}.bmatch div{display:flex;justify-content:space-between;gap:8px;padding:6px 10px;font-size:clamp(14px,1.4vw,20px)}.bmatch div+div{border-top:1px solid #d5dae1}.bmatch .win{background:var(--green2);font-weight:700}
 #panel{z-index:42}
+.dmh{position:fixed;left:0;right:0;top:0;z-index:99;background:#f5c518;color:#14203a;padding:18px 24px;font-size:32px;line-height:1.35;border-bottom:4px solid #14203a}.dmh button{color:#14203a;font-weight:700;font-size:30px;margin-left:12px;padding:4px 18px;border:3px solid #14203a;background:#fff;border-radius:8px}
 .tdstage{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 16px;background:#fff8e0;border-bottom:2px solid var(--ink)}.tdsl{font-weight:700;margin-right:4px}.tdstage small{opacity:.65;font-size:11px}.tdsolo{margin-left:8px;font-size:14px}
 .credp{background:#fff;border:2px solid #14203a;border-radius:999px;padding:0 6px;font-size:12px;line-height:20px;cursor:pointer;letter-spacing:-1px}.credp.low{background:#ffe3e0;border-color:#c8102e}.credp.zero{animation:pop 1s infinite}.credn{background:#ffe3e0;border-left:4px solid #c8102e;padding:6px 10px;border-radius:4px;font-size:14px}.credn.ok{background:#e5f4e4;border-color:#2e9e5b}
 .argboard{background:#5a3a22;border:6px solid #3a2414;border-radius:6px;padding:16px;margin:12px 0;text-align:center;box-shadow:inset 0 0 0 2px #7a5230}.abT{font-family:var(--f-disp);color:#fff;background:#c8102e;border-radius:4px;padding:4px 10px;display:inline-block;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase}.abN{font-family:var(--f-disp);font-size:22px;color:#14203a;background:linear-gradient(#f0d77a,#c9a640);border:2px solid #3a2414;border-radius:4px;padding:6px 10px;margin:8px auto;max-width:320px}
@@ -6265,6 +6266,18 @@ function lmDoor(c, b, H){
   const x = (b.door[0] - b.x) * 16; R_(c, '#161a24', x + 2, H - 14, 12, 14); R_(c, '#5a3a22', x + 3, H - 13, 10, 13);
   R_(c, '#f5c518', x + 10, H - 7, 2, 2); R_(c, '#f5c518', x + 2, H - 17, 12, 3); R_(c, '#161a24', x + 2, H - 17, 12, 1);
 }
+
+/* ---- Téléphone affiché en « version pour ordinateur » : on prévient le joueur ---- */
+(function desktopModeHint(){
+  try {
+    const touch = (navigator.maxTouchPoints || 0) > 0, small = Math.min(screen.width, screen.height) < 600;
+    if (!touch || !small || localStorage.getItem('tdp_dmh') === '1') return;
+    const d = document.createElement('div'); d.className = 'dmh';
+    d.innerHTML = `<b>Affichage « ordinateur » détecté.</b> Pour un jeu à la bonne taille : menu ⋮ de Chrome → décoche « Version pour ordinateur ». <button type="button">OK</button>`;
+    d.querySelector('button').onclick = () => { try { localStorage.setItem('tdp_dmh', '1'); } catch(e){} d.remove(); };
+    addEventListener('load', () => setTimeout(() => { if (document.documentElement.clientWidth >= 800) document.body.appendChild(d); }, 600));
+  } catch(e){}
+})();
 
 const IN_TILE_BASE = { '#':'wall', '.':'floor', 'c':'boxes', 'X':'exitdoor', 'S':'shelf', 'R':'fridge', 'K':'counter', 'g':'ext', 'D':'mat' };
 const IN_BLOCK = new Set('#cFXpSRKBQegbn');
